@@ -1,0 +1,47 @@
+---
+import Section from "@/components/Section.astro";
+import SocialIcon from "@/components/SocialIcon.astro";
+import { site } from "@/lib/site";
+const { contact } = site;
+---
+
+<Section id="contact" number={contact.sectionNumber} label={contact.sectionLabel}>
+  <h3 class="display mb-6 text-balance text-3xl font-semibold leading-tight text-foreground md:text-[2.75rem]">
+    {contact.headlineBefore}<span class="text-accent">{contact.headlineHighlight}</span>{contact.headlineAfter}
+  </h3>
+
+  <p class="mb-9 max-w-prose text-[0.9375rem] leading-relaxed text-muted-foreground md:text-base">
+    {contact.blurb}
+  </p>
+
+  <div class="flex flex-col items-start gap-6 sm:flex-row sm:items-center sm:gap-8">
+    <a href={`mailto:${contact.email}`} class="neu-btn-primary">
+      <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="m2 7 10 6 10-6"></path>
+      </svg>
+      {contact.cta}
+    </a>
+
+    <ul class="flex gap-3">
+      {
+        contact.socials.map((social) => (
+          <li>
+            <a
+              href={social.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="neu-icon h-12 w-12 text-muted-foreground hover:text-accent"
+              aria-label={social.label}
+            >
+              <SocialIcon icon={social.icon} />
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+
+  <p class="mt-8 font-mono text-xs text-subtle-foreground">
+    <a href={`mailto:${contact.email}`} class="transition-colors hover:text-accent">{contact.email}</a>
+  </p>
+</Section>

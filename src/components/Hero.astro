@@ -1,0 +1,76 @@
+---
+import { site } from "@/lib/site";
+const { hero } = site;
+---
+
+<section id="hero" class="relative flex min-h-[100svh] flex-col justify-center px-6 pb-24 pt-32" aria-label="Introduction">
+  <div class="mx-auto flex w-full max-w-3xl flex-col items-center gap-9 text-center">
+    <div class="neu-sm rounded-full p-2.5" style="background-color: var(--background)">
+      <div class="neu-in overflow-hidden rounded-full">
+        {
+          hero.hasAvatar ? (
+            <img
+              src="/images/avatar.jpg"
+              alt={hero.portraitAlt}
+              width="176"
+              height="176"
+              class="h-28 w-28 rounded-full object-cover md:h-36 md:w-36"
+              fetchpriority="high"
+            />
+          ) : (
+            <span
+              class="display flex h-28 w-28 items-center justify-center rounded-full text-3xl font-semibold text-accent md:h-36 md:w-36 md:text-4xl"
+              aria-hidden="true"
+            >
+              {hero.avatarInitials}
+            </span>
+          )
+        }
+      </div>
+    </div>
+
+    <div class="flex flex-col items-center gap-5">
+      <h1 class="display text-balance text-[2.75rem] font-semibold leading-[1.02] text-foreground sm:text-6xl md:text-7xl">
+        {hero.name}
+      </h1>
+      <p class="eyebrow !text-accent">{hero.tagline}</p>
+      <p class="max-w-prose text-pretty text-base leading-relaxed text-muted-foreground md:text-lg">
+        {hero.subtagline}
+      </p>
+    </div>
+
+    <div class="flex w-full flex-col items-center gap-3 sm:w-auto sm:flex-row">
+      <a href="#career" class="neu-btn-primary w-full sm:w-auto">{hero.primaryCta}</a>
+      <a href="#contact" class="neu-btn w-full sm:w-auto">{hero.secondaryCta}</a>
+    </div>
+
+    <dl class="mt-2 flex flex-wrap items-center justify-center gap-x-7 gap-y-3">
+      {
+        hero.facts.map((fact) => (
+          <div class="flex items-baseline gap-2">
+            <dt class="eyebrow">{fact.label}</dt>
+            <dd class="text-sm font-medium text-foreground">
+              {fact.href ? (
+                <a href={fact.href} target="_blank" rel="noopener noreferrer" class="underline decoration-hairline underline-offset-4 transition-colors hover:text-accent hover:decoration-accent">
+                  {fact.value}
+                </a>
+              ) : (
+                fact.value
+              )}
+            </dd>
+          </div>
+        ))
+      }
+    </dl>
+  </div>
+
+  <a
+    href="#about"
+    class="neu-icon absolute bottom-8 left-1/2 h-11 w-11 -translate-x-1/2 text-muted-foreground hover:text-accent"
+    aria-label="Scroll to the About section"
+  >
+    <svg class="h-4 w-4 motion-safe:animate-bounce" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M12 5v14M19 12l-7 7-7-7"></path>
+    </svg>
+  </a>
+</section>

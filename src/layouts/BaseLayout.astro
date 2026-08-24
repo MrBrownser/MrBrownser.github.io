@@ -1,0 +1,77 @@
+---
+import "@fontsource-variable/inter";
+import "@fontsource-variable/fraunces";
+import "@/styles/global.css";
+import Nav from "@/components/Nav.astro";
+import { site } from "@/lib/site";
+
+export interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { meta, hero, contact } = site;
+const title = Astro.props.title ?? meta.pageTitle;
+const description = Astro.props.description ?? meta.pageDescription;
+const canonical = new URL(Astro.url.pathname, Astro.site ?? meta.siteUrl);
+const ogImage = new URL(meta.ogImage, Astro.site ?? meta.siteUrl);
+
+const personSchema = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: site.footer.copyrightName,
+  jobTitle: hero.tagline,
+  url: meta.siteUrl,
+  email: `mailto:${contact.email}`,
+  address: { "@type": "PostalAddress", addressLocality: "Barcelona", addressCountry: "ES" },
+  worksFor: { "@type": "Organization", name: "Videocation.no", url: "https://videocation.no" },
+  sameAs: contact.socials.map((social) => social.href),
+};
+---
+
+<!doctype html>
+<html lang={meta.locale}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="author" content={site.footer.copyrightName} />
+    <link rel="canonical" href={canonical} />
+
+    <meta property="og:type" content="profile" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <meta name="theme-color" content="#ece6df" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#23211e" media="(prefers-color-scheme: dark)" />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(personSchema)} />
+
+    <script is:inline>
+      // Runs before first paint so the correct theme is never repainted.
+      (() => {
+        const stored = localStorage.getItem("theme");
+        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        if (stored === "dark" || (!stored && prefersDark)) {
+          document.documentElement.classList.add("dark");
+        }
+      })();
+    </script>
+  </head>
+  <body class="min-h-screen bg-background font-sans text-foreground antialiased">
+    <Nav />
+    <main id="main">
+      <slot />
+    </main>
+  </body>
+</html>

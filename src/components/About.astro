@@ -1,0 +1,27 @@
+---
+import Section from "@/components/Section.astro";
+import { site } from "@/lib/site";
+const { about } = site;
+---
+
+<Section id="about" number={about.sectionNumber} label={about.sectionLabel}>
+  <h3 class="display mb-8 text-balance text-3xl font-semibold leading-tight text-foreground md:text-[2.5rem]">
+    {about.cardHeadlineBefore}<span class="text-accent">{about.cardHeadlineHighlight}</span>{about.cardHeadlineAfter}
+  </h3>
+
+  <div class="flex max-w-prose flex-col gap-5 text-[0.9375rem] leading-[1.75] text-muted-foreground md:text-base">
+    {about.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+    {
+      about.roleParagraph && (
+        <p>
+          {about.roleParagraph.beforeRole}
+          {about.roleParagraph.role} {about.roleParagraph.atCompany}{" "}
+          <a href={about.roleParagraph.companyUrl} target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">
+            {about.roleParagraph.companyName}
+          </a>
+          {about.roleParagraph.after}
+        </p>
+      )
+    }
+  </div>
+</Section>

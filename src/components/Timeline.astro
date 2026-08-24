@@ -1,0 +1,101 @@
+---
+import Section from "@/components/Section.astro";
+import { site } from "@/lib/site";
+const { career, timeline } = site;
+---
+
+<Section id="career" number={career.sectionNumber} label={career.sectionLabel}>
+  <p class="display mb-12 max-w-prose text-balance text-2xl font-semibold leading-snug text-foreground md:text-3xl">
+    {career.intro}
+  </p>
+
+  <ol class="relative pl-8 sm:pl-10">
+    <div class="timeline-line absolute bottom-0 left-[3px] top-0 w-px sm:left-[5px]" aria-hidden="true"></div>
+
+    {
+      timeline.map((entry) => {
+        const isWork = entry.type === "work";
+        return (
+          <li class="timeline-item relative pb-10 last:pb-0">
+            <span
+              class:list={[
+                "absolute -left-8 top-[0.55rem] h-[9px] w-[9px] rounded-full sm:-left-10",
+                isWork ? "bg-accent" : "border-2 border-edu bg-background",
+              ]}
+              aria-hidden="true"
+            />
+
+            {isWork ? (
+              <article class="neu-card p-5 sm:p-7">
+                <p class="mb-2 font-mono text-xs font-semibold tabular-nums tracking-wide text-accent">{entry.date}</p>
+                <h3 class="text-pretty text-lg font-semibold leading-snug text-foreground">{entry.title}</h3>
+                <p class="mb-4 mt-1 text-sm font-medium text-subtle-foreground">{entry.organization}</p>
+                <p class="max-w-prose text-[0.9375rem] leading-relaxed text-muted-foreground">{entry.description}</p>
+                {entry.tags && entry.tags.length > 0 && (
+                  <ul class="mt-5 flex flex-wrap gap-2">
+                    {entry.tags.map((tag) => (
+                      <li class="neu-in rounded-lg px-2.5 py-1 text-[0.6875rem] font-medium tracking-wide text-muted-foreground">
+                        {tag}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </article>
+            ) : (
+              <article class="py-1">
+                <p class="mb-1.5 font-mono text-xs font-semibold tabular-nums tracking-wide text-edu">
+                  {entry.date} <span class="text-subtle-foreground">· Education</span>
+                </p>
+                <h3 class="text-pretty text-base font-semibold text-foreground">
+                  {entry.title}
+                  <span class="font-normal text-subtle-foreground"> · {entry.organization}</span>
+                </h3>
+                <p class="mt-1.5 max-w-prose text-sm leading-relaxed text-muted-foreground">{entry.description}</p>
+              </article>
+            )}
+          </li>
+        );
+      })
+    }
+  </ol>
+</Section>
+
+<script>
+  const items = document.querySelectorAll<HTMLElement>(".timeline-item");
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    items.forEach((i) => i.classList.add("is-in"));
+  } else {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add("is-in");
+          observer.unobserve(entry.target);
+        });
+      },
+      { threshold: 0.1, rootMargin: "0px 0px -8% 0px" },
+    );
+    items.forEach((item) => observer.observe(item));
+  }
+</script>
+
+<style>
+  .timeline-item {
+    opacity: 0;
+    transform: translateY(14px);
+    transition:
+      opacity 0.6s ease-out,
+      transform 0.6s ease-out;
+  }
+  .timeline-item.is-in {
+    opacity: 1;
+    transform: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .timeline-item {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+</style>

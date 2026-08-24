@@ -1,0 +1,26 @@
+---
+export interface Props {
+  id: string;
+  number: string;
+  label: string;
+  class?: string;
+}
+const { id, number, label, class: className = "" } = Astro.props;
+---
+
+<section id={id} class:list={["scroll-mt-24 px-6 py-20 md:py-28", className]} aria-labelledby={`${id}-label`}>
+  <div class="mx-auto grid max-w-5xl gap-8 md:grid-cols-[7rem_1fr] md:gap-12">
+    <div class="self-start md:sticky md:top-28">
+      <div class="flex items-center gap-3 md:flex-col md:items-start md:gap-4">
+        <span
+          class="neu-card-sm flex h-9 w-9 items-center justify-center text-xs font-bold tabular-nums text-accent"
+          aria-hidden="true">{number}</span
+        >
+        <h2 id={`${id}-label`} class="eyebrow">{label}</h2>
+      </div>
+    </div>
+    <div class="min-w-0">
+      <slot />
+    </div>
+  </div>
+</section>

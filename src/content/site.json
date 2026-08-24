@@ -1,0 +1,181 @@
+{
+  "meta": {
+    "siteUrl": "https://mrbrownser.github.io",
+    "pageTitle": "Adrià Castany Serrano — Head of Product & Tech",
+    "pageDescription": "I run product and technology at Videocation, a Norwegian B2B learning company. Seventeen years from ERP data migrations to leading product and engineering as one function.",
+    "ogImage": "/og.png",
+    "locale": "en"
+  },
+  "brand": {
+    "navInitials": "AC"
+  },
+  "hero": {
+    "hasAvatar": false,
+    "name": "Adrià Castany",
+    "portraitAlt": "Portrait of Adrià Castany Serrano",
+    "avatarInitials": "AC",
+    "tagline": "Head of Product & Tech",
+    "subtagline": "I lead product and engineering as one function. Seventeen years of shipping, from ERP data migrations to running a learning platform used by thousands of professionals.",
+    "primaryCta": "Explore my journey",
+    "secondaryCta": "Get in touch",
+    "facts": [
+      { "label": "Based in", "value": "Barcelona" },
+      { "label": "Currently", "value": "Videocation.no", "href": "https://videocation.no" },
+      { "label": "Languages", "value": "EN · ES · CA" }
+    ]
+  },
+  "about": {
+    "sectionNumber": "01",
+    "sectionLabel": "About",
+    "cardHeadlineBefore": "Product and engineering, ",
+    "cardHeadlineHighlight": "one function",
+    "cardHeadlineAfter": ".",
+    "paragraphs": [
+      "I run product and technology at Videocation, a Norwegian B2B learning company. Product, engineering, architecture, delivery and hiring all sit with me, which means I get to close the loop between what we decide to build and what actually reaches a customer.",
+      "I did not start here. My first decade was ERP: customising Logic Class for Spanish companies, migrating them off legacy accounting systems, and becoming the person who handled the deployments. Deploying Sage CRM on Windows Server was my first real contact with web services, and it was enough to make me want the whole thing.",
+      "So in 2015 I stopped, went to a bootcamp, and rebuilt my career from the bottom. Agency work, then a startup where I became technical lead, then four years at Haufe Group building microservices on Kubernetes. In 2021 I joined Videocation as a full stack engineer and grew through four roles in as many years.",
+      "In 2025 I finished a Master's in Digital Product Management at Nuclio Digital School, where our final project was picked as the best of the cohort. But I have always been a product developer at heart, motivated by solving the problem in front of me rather than by best practices for their own sake."
+    ],
+    "roleParagraph": null
+  },
+  "career": {
+    "sectionNumber": "02",
+    "sectionLabel": "Career",
+    "intro": "Seventeen years, two careers, one throughline: get close to the problem, then ship."
+  },
+  "timeline": [
+    {
+      "date": "2008 – 2012",
+      "title": "Telecommunications Engineering",
+      "organization": "Universitat Pompeu Fabra",
+      "description": "Engineering foundation. Electrical, electronics and communications, studied alongside a full-time job.",
+      "type": "education"
+    },
+    {
+      "date": "2008 – 2013",
+      "title": "Data Migrations Technician",
+      "organization": "Sage (via Servitel)",
+      "description": "Started my career customising the Logic Class ERP to customer requirements, then moved onto the migrations team and moved customers off legacy Sage products onto it. Years of hands-on SQL, and where I started doing application deployments.",
+      "type": "work",
+      "tags": ["ERP", "SQL", "Data Migration"]
+    },
+    {
+      "date": "2013 – 2015",
+      "title": "Consultant",
+      "organization": "Sage Spain",
+      "description": "Moved with my team from the subsidiary into Sage Spain itself. Same technical work, now customer-facing. Deployments became my specialism, on Logic Class and then Sage Murano. Sage CRM was in that set too, an on-premise web app on Windows Server, and my first real work with web services.",
+      "type": "work",
+      "tags": ["Consulting", "Deployments", "Sage CRM"]
+    },
+    {
+      "date": "2014",
+      "title": "Agility and Lean",
+      "organization": "Universidad Rey Juan Carlos",
+      "description": "Managing projects and businesses in the 21st century. The first formal push away from waterfall delivery.",
+      "type": "education"
+    },
+    {
+      "date": "2015",
+      "title": "Web Development Bootcamp",
+      "organization": "Ironhack",
+      "description": "The pivot. Left a stable ERP career to start over as a developer. Graduated with a top 5 project at Demo Day.",
+      "type": "education"
+    },
+    {
+      "date": "2015 – 2016",
+      "title": "Web Developer",
+      "organization": "Season",
+      "description": "Client projects at a development agency across Ruby on Rails, Drupal and JavaScript. Drupal meant learning PHP from scratch, which I did on the job. I took the operations side too: scripted deployments and provisioning, and fixed production servers when they broke.",
+      "type": "work",
+      "tags": ["Ruby on Rails", "Drupal", "Ansible", "Capistrano"]
+    },
+    {
+      "date": "2016 – 2017",
+      "title": "Creative Software Developer → Technical Lead",
+      "organization": "DenDen",
+      "description": "A startup with a mixed team, working hard to find product market fit. I architected the backend and frontend requirements and ran the technical screening for the engineer we hired. Shipped Forbidden City, an augmented reality iOS game built to get people into the shops in their own neighbourhood. The real problem was gamification: how to make the work we needed from users worth doing.",
+      "type": "work",
+      "tags": ["React Native", "Firebase", "MeteorJS", "Gamification"]
+    },
+    {
+      "date": "2017 – 2021",
+      "title": "Full Stack Engineer",
+      "organization": "Haufe Group",
+      "description": "On a team set up to test new business ideas and build out the ones that worked. Two app prototypes in six months, one of which went to production and shipped on both the App Store and Google Play. I owned features end to end, from shaping the idea through to the infrastructure they ran on. Also one of the cultural fit interviewers in the group's hiring process.",
+      "type": "work",
+      "tags": ["React", "Node.js", "Kubernetes", "Azure", "Jenkins", "Python"]
+    },
+    {
+      "date": "2021 – Present",
+      "title": "Full Stack → Sr. Engineer → Lead PM → Head of Product & Tech",
+      "organization": "Videocation.no",
+      "description": "Four roles in four years at a Norwegian B2B learning company. Today product, engineering, architecture, delivery and hiring all sit with me. I redesigned the SDLC around AI-assisted development, rewrote the Product Engineer job description and the interview that goes with it, and lead the vision for a platform thousands of professionals learn on.",
+      "type": "work",
+      "tags": ["Product Management", "Leadership", "Hiring", "AI-assisted SDLC"]
+    },
+    {
+      "date": "2024 – 2025",
+      "title": "Master's in Digital Product Management",
+      "organization": "Nuclio Digital School",
+      "description": "Product strategy, digital business and innovation management. Our final project was selected as the best of the cohort.",
+      "type": "education"
+    }
+  ],
+  "howIWork": {
+    "sectionNumber": "03",
+    "sectionLabel": "How I work",
+    "cardHeadlineBefore": "Unlearning is the ",
+    "cardHeadlineHighlight": "hard part",
+    "cardHeadlineAfter": ".",
+    "paragraphs": [
+      "The way I work has changed more in the last two years than in the previous ten. AI did not just add tools to my workflow, it changed what a workflow is. Ideation, research, code, review, delivery: I have rebuilt each of those steps around having a thinking partner that never gets tired of being questioned.",
+      "Adopting the tools is the easy half. The harder half is staying willing to throw away what worked yesterday. I have had to unlearn as much as I have learned, and that has been the most valuable part of it."
+    ],
+    "quote": "The best tool is the one that makes you rethink how you work.",
+    "closingParagraphs": [
+      "I do not just practise this on my own. Leading by example means showing rather than telling: pairing with engineers on AI-assisted development, running experiments on our product workflows, and giving the team room to adapt at their own pace. The goal is not to chase trends. It is to make continuous learning the default, which is a good thing to believe at a company that sells learning.",
+      "Technology moves fast. The engineers and product leaders who thrive are not the ones who know the most, they are the ones who adapt the fastest."
+    ]
+  },
+  "principles": {
+    "sectionNumber": "04",
+    "sectionLabel": "Principles",
+    "items": [
+      {
+        "title": "Close the loop",
+        "body": "Deciding what to build and being accountable for it reaching a customer should not be two different jobs. When they are, everyone optimises their half."
+      },
+      {
+        "title": "Start over when you have to",
+        "body": "I threw away a decade of ERP career at 29 to go back to being a junior. It was the best decision I have made. The same instinct applies to code, process and opinions."
+      },
+      {
+        "title": "Hire for the questions",
+        "body": "I have been involved in hiring at three companies over ten years. The signal I look for is what someone does when they do not know the answer, not the list of things they already know."
+      },
+      {
+        "title": "Ship, then learn",
+        "body": "Best practices are downstream of a shipped product. I would rather have something real in front of a user this week than something correct in three months."
+      }
+    ]
+  },
+  "contact": {
+    "sectionNumber": "05",
+    "sectionLabel": "Contact",
+    "headlineBefore": "Let's build something ",
+    "headlineHighlight": "together",
+    "headlineAfter": ".",
+    "blurb": "Whether you have a project in mind, want to compare notes on running product and engineering as one function, or just want to say hello, I would like to hear from you.",
+    "cta": "Email me",
+    "email": "castany.adria@gmail.com",
+    "socials": [
+      { "href": "https://www.linkedin.com/in/adriacastany", "label": "LinkedIn", "icon": "linkedin" },
+      { "href": "https://github.com/mrbrownser", "label": "GitHub", "icon": "github" },
+      { "href": "https://twitter.com/mrbrownser", "label": "Twitter / X", "icon": "twitter" }
+    ]
+  },
+  "footer": {
+    "note": "Built with Astro. Deployed on push.",
+    "copyrightName": "Adrià Castany Serrano"
+  }
+}

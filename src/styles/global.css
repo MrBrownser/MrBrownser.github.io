@@ -1,0 +1,217 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Warm neumorphism.
+ * The soft-UI depth language, reskinned onto a warm stone/ember palette.
+ * Rule that keeps it accessible: shadows carry depth, never meaning.
+ * Anything that has to be read or clicked gets real contrast on top of them.
+ */
+:root {
+  --background: #ece6df;
+  --foreground: #1c1917;
+  --muted-foreground: #57534e;
+  --subtle-foreground: #78716c;
+
+  /* Ember accent. `accent` is the text-safe tone, `solid` is the fill tone. */
+  --accent: #c2410c;
+  --accent-hover: #9a3412;
+  --accent-solid: #c2410c;
+  --accent-solid-foreground: #fff8f3;
+  --accent-quiet: #ea580c;
+
+  --edu: #15803d;
+
+  --neu-light: #fdfaf6;
+  --neu-dark: #c7bdb1;
+  --hairline: rgba(28, 25, 23, 0.09);
+
+  --neu-raised: 7px 7px 15px var(--neu-dark), -7px -7px 15px var(--neu-light);
+  --neu-raised-sm: 4px 4px 9px var(--neu-dark), -4px -4px 9px var(--neu-light);
+  --neu-inset: inset 3px 3px 7px var(--neu-dark), inset -3px -3px 7px var(--neu-light);
+  --neu-flat: 2px 2px 5px var(--neu-dark), -2px -2px 5px var(--neu-light);
+
+  --grain-opacity: 0.05;
+  color-scheme: light;
+}
+
+.dark {
+  --background: #23211e;
+  --foreground: #f5f1ec;
+  --muted-foreground: #b3ada6;
+  --subtle-foreground: #948d85;
+
+  --accent: #fb923c;
+  --accent-hover: #fdba74;
+  --accent-solid: #fb923c;
+  --accent-solid-foreground: #1f1c19;
+  --accent-quiet: #f97316;
+
+  --edu: #4ade80;
+
+  --neu-light: #2e2b27;
+  --neu-dark: #171512;
+  --hairline: rgba(245, 241, 236, 0.1);
+
+  --grain-opacity: 0.07;
+  color-scheme: dark;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+/* Fine grain over the whole page. Neumorphic surfaces read as plastic without it. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: var(--grain-opacity);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+@supports not (view-transition-name: root) {
+  body {
+    transition:
+      background-color 0.3s ease,
+      color 0.3s ease;
+  }
+}
+
+::view-transition-old(root) {
+  animation: none;
+  z-index: -1;
+}
+::view-transition-new(root) {
+  animation: ripple-expand 0.55s ease-in-out;
+}
+@keyframes ripple-expand {
+  from {
+    clip-path: circle(0% at var(--ripple-x) var(--ripple-y));
+  }
+  to {
+    clip-path: circle(150vmax at var(--ripple-x) var(--ripple-y));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  ::view-transition-new(root) {
+    animation: none;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+  ::selection {
+    background: var(--accent-solid);
+    color: var(--accent-solid-foreground);
+  }
+}
+
+@layer components {
+  .neu {
+    box-shadow: var(--neu-raised);
+  }
+  .neu-sm {
+    box-shadow: var(--neu-raised-sm);
+  }
+  .neu-in {
+    box-shadow: var(--neu-inset);
+  }
+
+  /* Raised surfaces get a hairline so the edge survives a low-contrast display. */
+  .neu-card {
+    @apply rounded-2xl border;
+    border-color: var(--hairline);
+    background-color: var(--background);
+    box-shadow: var(--neu-raised);
+  }
+  .neu-card-sm {
+    @apply rounded-xl border;
+    border-color: var(--hairline);
+    background-color: var(--background);
+    box-shadow: var(--neu-raised-sm);
+  }
+
+  .neu-btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border px-7 py-3.5 text-sm font-semibold transition-all duration-200;
+    border-color: var(--hairline);
+    background-color: var(--background);
+    color: var(--foreground);
+    box-shadow: var(--neu-raised-sm);
+  }
+  .neu-btn:hover {
+    box-shadow: var(--neu-flat);
+    color: var(--accent);
+  }
+  .neu-btn:active {
+    box-shadow: var(--neu-inset);
+  }
+
+  .neu-btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-7 py-3.5 text-sm font-semibold transition-all duration-200;
+    background-color: var(--accent-solid);
+    color: var(--accent-solid-foreground);
+    box-shadow: var(--neu-raised-sm);
+  }
+  .neu-btn-primary:hover {
+    box-shadow: var(--neu-flat);
+    filter: brightness(1.08);
+  }
+  .neu-btn-primary:active {
+    box-shadow: var(--neu-inset);
+  }
+
+  .neu-icon {
+    @apply inline-flex items-center justify-center rounded-xl border transition-all duration-200;
+    border-color: var(--hairline);
+    background-color: var(--background);
+    box-shadow: var(--neu-raised-sm);
+  }
+  .neu-icon:hover {
+    box-shadow: var(--neu-flat);
+  }
+
+  .timeline-line {
+    background: linear-gradient(
+      to bottom,
+      transparent,
+      var(--hairline) 4rem,
+      var(--hairline) calc(100% - 4rem),
+      transparent
+    );
+    box-shadow: 1px 0 1px var(--neu-light);
+  }
+
+  .display {
+    font-family: "Fraunces Variable", "Fraunces", Georgia, serif;
+    font-variation-settings: "SOFT" 40, "WONK" 1, "opsz" 96;
+    letter-spacing: -0.02em;
+  }
+
+  .eyebrow {
+    @apply text-[0.6875rem] font-semibold uppercase tracking-[0.22em];
+    color: var(--subtle-foreground);
+  }
+}

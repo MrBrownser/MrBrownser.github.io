@@ -1,0 +1,22 @@
+---
+import { site } from "@/lib/site";
+const { footer } = site;
+const year = new Date().getFullYear();
+---
+
+<footer class="px-6 pb-12">
+  <div class="mx-auto max-w-5xl">
+    <div class="neu-in flex flex-col items-center gap-3 rounded-2xl px-7 py-6 sm:flex-row sm:justify-between">
+      <p class="text-center text-xs text-subtle-foreground sm:text-left">
+        © {year} {footer.copyrightName}. {footer.note}
+      </p>
+      <nav aria-label="Footer">
+        <ul class="flex gap-5">
+          <li><a href="#hero" class="text-xs text-subtle-foreground transition-colors hover:text-accent">Top</a></li>
+          <li><a href="#career" class="text-xs text-subtle-foreground transition-colors hover:text-accent">Career</a></li>
+          <li><a href="#contact" class="text-xs text-subtle-foreground transition-colors hover:text-accent">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</footer>
