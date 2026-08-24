@@ -24,7 +24,7 @@ const { brand } = site;
   data-scrolled="false"
 >
   <nav class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4" aria-label="Main">
-    <a href="#hero" class="display text-lg font-semibold tracking-tight text-foreground">
+    <a href="#hero" class="display -m-2 p-2 text-lg font-semibold tracking-tight text-foreground">
       {brand.navInitials}<span class="text-accent">.</span>
     </a>
 
@@ -44,14 +44,14 @@ const { brand } = site;
     </ul>
 
     <div class="flex items-center gap-2">
-      <button id="theme-toggle" class="neu-icon h-10 w-10 text-foreground" aria-label="Toggle colour theme">
+      <button id="theme-toggle" class="neu-icon h-11 w-11 text-foreground" aria-label="Toggle colour theme">
         <svg class="theme-sun h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg>
         <svg class="theme-moon h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg>
       </button>
 
       <button
         id="mobile-menu-btn"
-        class="neu-icon h-10 w-10 text-foreground md:hidden"
+        class="neu-icon h-11 w-11 text-foreground md:hidden"
         aria-label="Open menu"
         aria-expanded="false"
         aria-controls="mobile-menu"
