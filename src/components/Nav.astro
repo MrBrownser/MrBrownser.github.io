@@ -112,6 +112,9 @@ const { brand } = site;
 
     function setMenu(open: boolean) {
       menu?.classList.toggle("hidden", !open);
+      // The header is transparent at the top of the page. An open menu needs
+      // its own surface or it floats over the hero with nothing behind it.
+      header?.setAttribute("data-menu-open", String(open));
       menuBtn?.setAttribute("aria-expanded", String(open));
       menuBtn?.setAttribute("aria-label", open ? "Close menu" : "Open menu");
       menuBtn?.querySelector(".menu-open")?.classList.toggle("hidden", open);
@@ -161,7 +164,8 @@ const { brand } = site;
 </script>
 
 <style>
-  #site-header[data-scrolled="true"] {
+  #site-header[data-scrolled="true"],
+  #site-header[data-menu-open="true"] {
     background-color: color-mix(in srgb, var(--background) 82%, transparent);
     backdrop-filter: blur(12px);
     box-shadow: 0 1px 0 var(--hairline);
