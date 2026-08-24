@@ -3,9 +3,9 @@ import { site } from "@/lib/site";
 const { hero } = site;
 ---
 
-<section id="hero" class="relative flex min-h-[100svh] flex-col justify-center px-6 pb-24 pt-32" aria-label="Introduction">
-  <div class="mx-auto flex w-full max-w-3xl flex-col items-center gap-9 text-center">
-    <div class="neu-sm rounded-full p-2.5" style="background-color: var(--background)">
+<section id="hero" class="relative flex min-h-[100svh] flex-col justify-center px-6 pb-20 pt-28" aria-label="Introduction">
+  <div class="hero-stack mx-auto flex w-full max-w-3xl flex-col items-center gap-9 text-center">
+    <div class="hero-plate neu-sm rounded-full p-2.5" style="background-color: var(--background)">
       <div class="neu-in overflow-hidden rounded-full">
         {
           hero.hasAvatar ? (
@@ -66,7 +66,7 @@ const { hero } = site;
 
   <a
     href="#about"
-    class="neu-icon absolute bottom-8 left-1/2 h-11 w-11 -translate-x-1/2 text-muted-foreground hover:text-accent"
+    class="scroll-cue neu-icon absolute bottom-8 left-1/2 h-11 w-11 -translate-x-1/2 text-muted-foreground hover:text-accent"
     aria-label="Scroll to the About section"
   >
     <svg class="h-4 w-4 motion-safe:animate-bounce" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -74,3 +74,27 @@ const { hero } = site;
     </svg>
   </a>
 </section>
+
+<style>
+  /* Short laptop windows: the hero must not push its own CTAs below the fold. */
+  @media (max-height: 780px) and (min-width: 640px) {
+    #hero {
+      padding-top: 6rem;
+      padding-bottom: 3rem;
+    }
+    .hero-stack {
+      gap: 1.5rem;
+    }
+    .hero-plate :is(img, span) {
+      height: 5rem;
+      width: 5rem;
+      font-size: 1.5rem;
+    }
+    #hero h1 {
+      font-size: 3.25rem;
+    }
+    .scroll-cue {
+      display: none;
+    }
+  }
+</style>
