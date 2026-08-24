@@ -12,16 +12,16 @@
   --background: #ece6df;
   --foreground: #1c1917;
   --muted-foreground: #57534e;
-  --subtle-foreground: #78716c;
+  --subtle-foreground: #665f58;
 
   /* Ember accent. `accent` is the text-safe tone, `solid` is the fill tone. */
-  --accent: #c2410c;
-  --accent-hover: #9a3412;
+  --accent: #a8380a;
+  --accent-hover: #7c2d12;
   --accent-solid: #c2410c;
   --accent-solid-foreground: #fff8f3;
   --accent-quiet: #ea580c;
 
-  --edu: #15803d;
+  --edu: #166534;
 
   --neu-light: #fdfaf6;
   --neu-dark: #c7bdb1;
