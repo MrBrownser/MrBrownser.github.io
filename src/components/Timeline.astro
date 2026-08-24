@@ -9,7 +9,7 @@ const { career, timeline } = site;
     {career.intro}
   </p>
 
-  <ol class="relative pl-8 sm:pl-10">
+  <ol class="relative pl-8 sm:pl-10" data-reveal="idle">
     <div class="timeline-line absolute bottom-0 left-[3px] top-0 w-px sm:left-[5px]" aria-hidden="true"></div>
 
     {
@@ -61,12 +61,18 @@ const { career, timeline } = site;
 </Section>
 
 <script>
+  const list = document.querySelector<HTMLElement>("[data-reveal]");
   const items = document.querySelectorAll<HTMLElement>(".timeline-item");
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    items.forEach((i) => i.classList.add("is-in"));
-  } else {
+
+  // Arm the hidden state from JS. If this script never runs, the timeline
+  // renders plainly visible instead of disappearing behind opacity: 0.
+  if (list && items.length && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    list.dataset.reveal = "armed";
+
+    let observerRan = false;
     const observer = new IntersectionObserver(
       (entries) => {
+        observerRan = true;
         entries.forEach((entry) => {
           if (!entry.isIntersecting) return;
           entry.target.classList.add("is-in");
@@ -76,26 +82,27 @@ const { career, timeline } = site;
       { threshold: 0.1, rootMargin: "0px 0px -8% 0px" },
     );
     items.forEach((item) => observer.observe(item));
+
+    // The observer fires once per element as soon as it is observed, whatever
+    // the intersection state. If it has not run at all after two seconds it is
+    // not going to, so drop back to showing everything. A broken observer must
+    // never cost the reader the career section.
+    window.setTimeout(() => {
+      if (!observerRan) list.dataset.reveal = "idle";
+    }, 2000);
   }
 </script>
 
 <style>
-  .timeline-item {
+  [data-reveal="armed"] .timeline-item {
     opacity: 0;
     transform: translateY(14px);
     transition:
       opacity 0.6s ease-out,
       transform 0.6s ease-out;
   }
-  .timeline-item.is-in {
+  [data-reveal="armed"] .timeline-item.is-in {
     opacity: 1;
     transform: none;
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .timeline-item {
-      opacity: 1;
-      transform: none;
-      transition: none;
-    }
   }
 </style>
