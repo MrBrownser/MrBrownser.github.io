@@ -6,9 +6,9 @@ const { howIWork } = site;
 
 <Section id="how-i-work" number={howIWork.sectionNumber} label={howIWork.sectionLabel}>
   <div class="neu-card p-7 md:p-11">
-    <h3 class="display mb-7 text-balance text-3xl font-semibold leading-tight text-foreground md:text-[2.5rem]">
+    <p class="display mb-7 text-balance text-3xl font-semibold leading-tight text-foreground md:text-[2.5rem]">
       {howIWork.cardHeadlineBefore}<span class="text-accent">{howIWork.cardHeadlineHighlight}</span>{howIWork.cardHeadlineAfter}
-    </h3>
+    </p>
 
     <div class="flex max-w-prose flex-col gap-5 text-[0.9375rem] leading-[1.75] text-muted-foreground md:text-base">
       {howIWork.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
