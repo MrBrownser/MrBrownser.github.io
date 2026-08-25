@@ -3,6 +3,11 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
+  # The career year count is resolved at build time, so rebuild on the 1st of
+  # every month. Without this it would keep claiming last year's number until
+  # the next push.
+  schedule:
+    - cron: "0 4 1 * *"
   workflow_dispatch:
 
 permissions:
