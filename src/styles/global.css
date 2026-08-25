@@ -2,6 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Typed so the engine's writes are validated and interpolable. Browsers without
+   @property (pre-Safari 16.4) fall back to plain substitution, which resolves the
+   same calc() correctly, so the effect degrades to working rather than broken. */
+@property --lx {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+@property --ly {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+
 /*
  * Warm neumorphism.
  * The soft-UI depth language, reskinned onto a warm stone/ember palette.
@@ -27,10 +41,25 @@
   --neu-dark: #c7bdb1;
   --hairline: rgba(28, 25, 23, 0.09);
 
-  --neu-raised: 7px 7px 15px var(--neu-dark), -7px -7px 15px var(--neu-light);
-  --neu-raised-sm: 4px 4px 9px var(--neu-dark), -4px -4px 9px var(--neu-light);
-  --neu-inset: inset 3px 3px 7px var(--neu-dark), inset -3px -3px 7px var(--neu-light);
-  --neu-flat: 2px 2px 5px var(--neu-dark), -2px -2px 5px var(--neu-light);
+  /* Direction the dark half of every shadow pair is cast, so it points away from
+     the light. Magnitude is held at sqrt(2) by the engine: direction moves, depth
+     never does. At rest (1, 1) is the fixed top-left light this design shipped
+     with, so no JS, reduced motion, and pre-hydration all render identically. */
+  --lx: 1;
+  --ly: 1;
+
+  --neu-raised:
+    calc(var(--lx) * 7px) calc(var(--ly) * 7px) 15px var(--neu-dark),
+    calc(var(--lx) * -7px) calc(var(--ly) * -7px) 15px var(--neu-light);
+  --neu-raised-sm:
+    calc(var(--lx) * 4px) calc(var(--ly) * 4px) 9px var(--neu-dark),
+    calc(var(--lx) * -4px) calc(var(--ly) * -4px) 9px var(--neu-light);
+  --neu-inset:
+    inset calc(var(--lx) * 3px) calc(var(--ly) * 3px) 7px var(--neu-dark),
+    inset calc(var(--lx) * -3px) calc(var(--ly) * -3px) 7px var(--neu-light);
+  --neu-flat:
+    calc(var(--lx) * 2px) calc(var(--ly) * 2px) 5px var(--neu-dark),
+    calc(var(--lx) * -2px) calc(var(--ly) * -2px) 5px var(--neu-light);
 
   --grain-opacity: 0.05;
   color-scheme: light;

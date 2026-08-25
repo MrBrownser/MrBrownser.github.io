@@ -44,6 +44,17 @@ const { brand } = site;
     </ul>
 
     <div class="flex items-center gap-2">
+      {/* Hidden until LightSource.astro confirms a real motion sensor. Desktop
+          browsers define DeviceOrientationEvent without having one. */}
+      <button
+        id="tilt-toggle"
+        class="neu-icon hidden h-11 w-11 text-foreground"
+        aria-label="Steer the light by tilting"
+        aria-pressed="false"
+      >
+        <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9"></path><path d="M12 3v9l6.4 6.4"></path><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"></circle></svg>
+      </button>
+
       <button id="theme-toggle" class="neu-icon h-11 w-11 text-foreground" aria-label="Toggle colour theme">
         <svg class="theme-sun h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg>
         <svg class="theme-moon h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg>
