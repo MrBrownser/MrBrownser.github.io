@@ -9,19 +9,20 @@ const { career, timeline } = site;
     {career.intro}
   </p>
 
-  <ol class="relative pl-8 sm:pl-10" data-reveal="idle">
-    <div class="timeline-line absolute bottom-0 left-[3px] top-0 w-px sm:left-[5px]" aria-hidden="true"></div>
+  <ol class="timeline relative" data-reveal="idle">
+    <div class="timeline-line absolute bottom-0 top-0 w-px -translate-x-1/2" style="left: var(--rail)" aria-hidden="true"></div>
 
     {
       timeline.map((entry) => {
         const isWork = entry.type === "work";
         return (
-          <li class="timeline-item relative pb-10 last:pb-0">
+          <li class="timeline-item relative pb-10 pl-8 last:pb-0 sm:pl-10">
             <span
               class:list={[
-                "absolute -left-8 top-[0.55rem] h-[9px] w-[9px] rounded-full sm:-left-10",
+                "absolute top-[0.55rem] h-[9px] w-[9px] -translate-x-1/2 rounded-full",
                 isWork ? "bg-accent" : "border-2 border-edu bg-background",
               ]}
+              style="left: var(--rail)"
               aria-hidden="true"
             />
 
@@ -94,6 +95,16 @@ const { career, timeline } = site;
 </script>
 
 <style>
+  /* One shared x for the rail and every dot, so they cannot drift apart. */
+  .timeline {
+    --rail: 4px;
+  }
+  @media (min-width: 640px) {
+    .timeline {
+      --rail: 5px;
+    }
+  }
+
   [data-reveal="armed"] .timeline-item {
     opacity: 0;
     transform: translateY(14px);

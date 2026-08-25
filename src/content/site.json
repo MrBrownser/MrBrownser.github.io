@@ -2,20 +2,20 @@
   "meta": {
     "siteUrl": "https://mrbrownser.github.io",
     "pageTitle": "Adrià Castany Serrano — Head of Product & Tech",
-    "pageDescription": "I run product and technology at Videocation, a Norwegian B2B learning company. Seventeen years from ERP data migrations to leading product and engineering as one function.",
+    "pageDescription": "I run product and technology at Videocation, a Norwegian B2B learning company. {{Years}} years from ERP data migrations to leading product and engineering as one function.",
     "ogImage": "/og.jpg",
     "locale": "en"
   },
   "brand": {
-    "navInitials": "AC"
+    "navInitials": "ACS"
   },
   "hero": {
     "hasAvatar": false,
-    "name": "Adrià Castany",
+    "name": "Adrià Castany Serrano",
     "portraitAlt": "Portrait of Adrià Castany Serrano",
-    "avatarInitials": "AC",
+    "avatarInitials": "ACS",
     "tagline": "Head of Product & Tech",
-    "subtagline": "I lead product and engineering as one function. Seventeen years of shipping, from ERP data migrations to running a learning platform used by thousands of professionals.",
+    "subtagline": "I lead product and engineering as one function. {{Years}} years of shipping, from ERP data migrations to running a learning platform used by thousands of professionals.",
     "primaryCta": "Explore my journey",
     "secondaryCta": "Get in touch",
     "facts": [
@@ -32,7 +32,7 @@
     "cardHeadlineAfter": ".",
     "paragraphs": [
       "I run product and technology at Videocation, a Norwegian B2B learning company. Product, engineering, architecture, delivery and hiring all sit with me, which means I get to close the loop between what we decide to build and what actually reaches a customer.",
-      "I did not start here. My first decade was ERP: customising Logic Class for Spanish companies, migrating them off legacy accounting systems, and becoming the person who handled the deployments. Deploying Sage CRM on Windows Server was my first real contact with web services, and it was enough to make me want the whole thing.",
+      "I did not start here. My first decade was ERP: customising Logic Class for Spanish companies, migrating them off legacy accounting systems, and becoming the person who handled the deployments. Deploying Sage CRM on Windows Server was my first real contact with web services. I take things apart to understand how they were made, and I keep asking why until there are no layers left, so one web application was never going to be the end of it.",
       "So in 2015 I stopped, went to a bootcamp, and rebuilt my career from the bottom. Agency work, then a startup where I became technical lead, then four years at Haufe Group building microservices on Kubernetes. In 2021 I joined Videocation as a full stack engineer and grew through four roles in as many years.",
       "In 2025 I finished a Master's in Digital Product Management at Nuclio Digital School, where our final project was picked as the best of the cohort. But I have always been a product developer at heart, motivated by solving the problem in front of me rather than by best practices for their own sake."
     ],
@@ -41,14 +41,14 @@
   "career": {
     "sectionNumber": "02",
     "sectionLabel": "Career",
-    "intro": "Seventeen years, two careers, one throughline: get close to the problem, then ship."
+    "intro": "{{Years}} years, two careers, one throughline: get close to the problem, then ship."
   },
   "timeline": [
     {
       "date": "2008 – 2012",
       "title": "Telecommunications Engineering",
       "organization": "Universitat Pompeu Fabra",
-      "description": "Engineering foundation. Electrical, electronics and communications, studied alongside a full-time job.",
+      "description": "Engineering foundation. Electrical, electronics and communications. Half the day at the university, the other half at the office, until the degree was finished and the job went full time.",
       "type": "education"
     },
     {
@@ -78,7 +78,7 @@
       "date": "2015",
       "title": "Web Development Bootcamp",
       "organization": "Ironhack",
-      "description": "The pivot. Left a stable ERP career to start over as a developer. Graduated with a top 5 project at Demo Day.",
+      "description": "The pivot. Left a stable career as an ERP consultant at a large international software company to start over as a developer. Graduated with a top 5 project at Demo Day.",
       "type": "education"
     },
     {
@@ -103,7 +103,7 @@
       "organization": "Haufe Group",
       "description": "On a team set up to test new business ideas and build out the ones that worked. Two app prototypes in six months, one of which went to production and shipped on both the App Store and Google Play. I owned features end to end, from shaping the idea through to the infrastructure they ran on. Also one of the cultural fit interviewers in the group's hiring process.",
       "type": "work",
-      "tags": ["React", "Node.js", "Kubernetes", "Azure", "Jenkins", "Python"]
+      "tags": ["React", "React Native", "Node.js", "Kubernetes", "Azure", "Jenkins", "Python"]
     },
     {
       "date": "2021 – Present",
