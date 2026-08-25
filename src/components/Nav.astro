@@ -89,11 +89,6 @@ const { brand } = site;
     }
 
     function toggleTheme(event: Event) {
-      const button = event.currentTarget as HTMLElement;
-      const rect = button.getBoundingClientRect();
-      root.style.setProperty("--ripple-x", `${rect.left + rect.width / 2}px`);
-      root.style.setProperty("--ripple-y", `${rect.top + rect.height / 2}px`);
-
       const apply = () => {
         root.classList.toggle("dark");
         localStorage.setItem("theme", root.classList.contains("dark") ? "dark" : "light");
@@ -101,8 +96,42 @@ const { brand } = site;
       };
 
       const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      if (reduced || !document.startViewTransition) apply();
-      else document.startViewTransition(apply);
+      if (reduced || !document.startViewTransition || !root.animate) {
+        apply();
+        return;
+      }
+
+      // Measure the button now, before the transition swaps anything out.
+      const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+      const x = rect.left + rect.width / 2;
+      const y = rect.top + rect.height / 2;
+      // Reach the corner furthest from the button so the wipe always completes.
+      const radius = Math.hypot(
+        Math.max(x, window.innerWidth - x),
+        Math.max(y, window.innerHeight - y),
+      );
+
+      const transition = document.startViewTransition(apply);
+
+      // Animate the pseudo-element directly with real pixel values. Passing the
+      // origin through CSS custom properties depends on them inheriting into the
+      // view-transition pseudo tree, which is where the ripple lost its origin.
+      transition.ready
+        .then(() => {
+          root.animate(
+            {
+              clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${radius}px at ${x}px ${y}px)`],
+            },
+            {
+              duration: 550,
+              easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+              pseudoElement: "::view-transition-new(root)",
+            },
+          );
+        })
+        .catch(() => {
+          /* transition was skipped; the class swap already happened */
+        });
     }
 
     document.getElementById("theme-toggle")?.addEventListener("click", toggleTheme);

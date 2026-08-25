@@ -86,28 +86,23 @@ body::after {
   }
 }
 
-::view-transition-old(root) {
+/* The incoming theme is clipped open by Nav.astro via the Web Animations API,
+   so the outgoing one just sits still underneath it. */
+::view-transition-old(root),
+::view-transition-new(root) {
   animation: none;
-  z-index: -1;
+  mix-blend-mode: normal;
+}
+::view-transition-old(root) {
+  z-index: 0;
 }
 ::view-transition-new(root) {
-  animation: ripple-expand 0.55s ease-in-out;
-}
-@keyframes ripple-expand {
-  from {
-    clip-path: circle(0% at var(--ripple-x) var(--ripple-y));
-  }
-  to {
-    clip-path: circle(150vmax at var(--ripple-x) var(--ripple-y));
-  }
+  z-index: 1;
 }
 
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
-  }
-  ::view-transition-new(root) {
-    animation: none;
   }
   *,
   *::before,
