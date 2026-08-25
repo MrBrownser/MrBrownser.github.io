@@ -1,0 +1,220 @@
+---
+/*
+ * Moves the light every neumorphic surface is lit by.
+ *
+ * The whole page shares one direction — a sun, not 55 lamps — carried in the
+ * `--lx` / `--ly` pair that `global.css` multiplies into every shadow offset.
+ * That is the entire coupling: this component writes two numbers, and every
+ * raised, inset and flat surface follows.
+ *
+ * Nothing here changes contrast. The vector's magnitude is pinned, so only the
+ * direction of depth moves, never its amount.
+ */
+---
+
+<script>
+  function initLightSource() {
+    const root = document.documentElement;
+
+    // Rest state (1, 1) is the fixed top-left light the design shipped with.
+    // Everything below is a rotation of a vector with this magnitude.
+    const REST = Math.SQRT2;
+    // Neumorphism reads as depth only while the viewer can assume light from
+    // above. Let the light swing freely left and right, but never let it drop
+    // below the horizon, or raised cards start reading as holes.
+    const MIN_DOWN = 0.34;
+    // Below this the shadow change is invisible, so writing it is pure cost.
+    const EPSILON = 0.004;
+    const EASE = 0.12;
+    // Degrees of phone tilt that map to the full horizontal swing.
+    const TILT_RANGE = 32;
+    /* Both inputs land on the same mapping: a horizontal term and a vertical one
+       composed against a constant overhead bias. The bias is what gives the
+       neutral input — cursor at the centre, phone held flat — a stable answer of
+       "light directly above" instead of a degenerate atan2(0, 0). */
+    const OVERHEAD_BIAS = 0.62;
+    const HORIZONTAL_SWING = 1.15;
+    const VERTICAL_SWING = 0.75;
+
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    let targetAngle = Math.PI / 4;
+    let currentAngle = targetAngle;
+    let lastX: number | null = null;
+    let lastY: number | null = null;
+    let running = false;
+    let tilting = false;
+
+    /* Clamp the vector into the upper half while preserving its length, so the
+       light slides along the horizon instead of losing depth as it gets there. */
+    function vectorFor(angle: number): [number, number] {
+      let x = Math.cos(angle) * REST;
+      let y = Math.sin(angle) * REST;
+      if (y < REST * MIN_DOWN) {
+        y = REST * MIN_DOWN;
+        x = Math.sign(x || 1) * Math.sqrt(Math.max(REST * REST - y * y, 0));
+      }
+      return [x, y];
+    }
+
+    function frame() {
+      let delta = targetAngle - currentAngle;
+      // Always rotate the short way round, so a light crossing the top of the
+      // screen does not unwind the long way through the bottom.
+      while (delta > Math.PI) delta -= 2 * Math.PI;
+      while (delta < -Math.PI) delta += 2 * Math.PI;
+      currentAngle += delta * EASE;
+
+      const [x, y] = vectorFor(currentAngle);
+      const moved = lastX === null || Math.abs(x - lastX) > EPSILON || Math.abs(y - lastY!) > EPSILON;
+
+      if (moved) {
+        root.style.setProperty("--lx", x.toFixed(3));
+        root.style.setProperty("--ly", y.toFixed(3));
+        lastX = x;
+        lastY = y;
+      }
+
+      // Stop scheduling once the light has settled. An idle page costs nothing,
+      // which is what makes the tilt mode viable on a phone held still.
+      if (Math.abs(delta) > 0.0005 || moved) {
+        requestAnimationFrame(frame);
+      } else {
+        running = false;
+      }
+    }
+
+    function wake() {
+      if (running || reduceMotion.matches || document.hidden) return;
+      running = true;
+      requestAnimationFrame(frame);
+    }
+
+    /* `horizontal` is positive when the light should come from the left, so the
+       dark shadow falls to the right. `vertical` is positive when it should come
+       from higher up. Both are expected in roughly -1..1. */
+    function aim(horizontal: number, vertical: number) {
+      targetAngle = Math.atan2(
+        OVERHEAD_BIAS + vertical * VERTICAL_SWING,
+        horizontal * HORIZONTAL_SWING,
+      );
+      wake();
+    }
+
+    function aimAt(clientX: number, clientY: number) {
+      const clamp = (n: number) => Math.max(-1, Math.min(1, n));
+      aim(
+        clamp((window.innerWidth / 2 - clientX) / (window.innerWidth / 2)),
+        clamp((window.innerHeight / 2 - clientY) / (window.innerHeight / 2)),
+      );
+    }
+
+    function rest() {
+      targetAngle = Math.PI / 4;
+      wake();
+    }
+
+    /* ---- pointer ---- */
+
+    window.addEventListener(
+      "pointermove",
+      (event) => {
+        // A finger dragging the page should not fight the tilt mapping.
+        if (tilting || event.pointerType === "touch") return;
+        aimAt(event.clientX, event.clientY);
+      },
+      { passive: true },
+    );
+
+    // Losing the cursor should return the light home rather than freeze it
+    // wherever the pointer happened to leave.
+    document.addEventListener("pointerleave", () => {
+      if (!tilting) rest();
+    });
+
+    /* ---- device tilt ---- */
+
+    const button = document.getElementById("tilt-toggle");
+    const DeviceOrientation = window.DeviceOrientationEvent as
+      | (typeof window.DeviceOrientationEvent & { requestPermission?: () => Promise<string> })
+      | undefined;
+    const needsPermission = typeof DeviceOrientation?.requestPermission === "function";
+    // Desktop Chrome defines DeviceOrientationEvent, so its presence proves
+    // nothing on its own. Require a real sensor gate: iOS's permission API, or
+    // a device that at least claims a coarse pointer.
+    const mayHaveSensor =
+      Boolean(DeviceOrientation) && (needsPermission || window.matchMedia("(pointer: coarse)").matches);
+
+    let restBeta: number | null = null;
+
+    function onOrientation(event: DeviceOrientationEvent) {
+      if (event.beta === null && event.gamma === null) return;
+      // Calibrate to however the phone is actually being held, so the light
+      // starts overhead instead of wherever a nominal flat-on-a-table pose is.
+      if (restBeta === null) restBeta = event.beta ?? 45;
+
+      const gamma = event.gamma ?? 0;
+      const beta = (event.beta ?? 45) - restBeta;
+      // Undo the screen rotation so tilting "left" means left to the viewer,
+      // not left to the device's fixed axes.
+      const screenAngle = ((screen.orientation && screen.orientation.angle) || 0) * (Math.PI / 180);
+      const gx = gamma * Math.cos(screenAngle) - beta * Math.sin(screenAngle);
+      const gy = gamma * Math.sin(screenAngle) + beta * Math.cos(screenAngle);
+
+      const nx = Math.max(-1, Math.min(1, gx / TILT_RANGE));
+      const ny = Math.max(-1, Math.min(1, gy / TILT_RANGE));
+
+      // Tilting the phone right should throw the light in from the right, which
+      // is the opposite sign to the horizontal term. Held flat, this lands on the
+      // same overhead neutral the pointer path uses at the centre of the screen.
+      aim(-nx, ny);
+    }
+
+    function setTilting(on: boolean) {
+      tilting = on;
+      button?.setAttribute("aria-pressed", String(on));
+      button?.setAttribute("aria-label", on ? "Stop steering the light by tilting" : "Steer the light by tilting");
+      if (!on) {
+        window.removeEventListener("deviceorientation", onOrientation);
+        restBeta = null;
+        rest();
+      }
+    }
+
+    if (button && mayHaveSensor) {
+      button.classList.remove("hidden");
+      button.addEventListener("click", async () => {
+        if (tilting) return setTilting(false);
+        try {
+          if (needsPermission) {
+            // iOS only grants this from inside the gesture, which is the whole
+            // reason this is a button and not an automatic upgrade.
+            const result = await DeviceOrientation!.requestPermission!();
+            if (result !== "granted") return;
+          }
+          window.addEventListener("deviceorientation", onOrientation);
+          setTilting(true);
+        } catch {
+          /* sensor refused or unavailable; the pointer path still works */
+        }
+      });
+    }
+
+    /* ---- restraint ---- */
+
+    reduceMotion.addEventListener("change", () => {
+      if (!reduceMotion.matches) return;
+      root.style.removeProperty("--lx");
+      root.style.removeProperty("--ly");
+      lastX = null;
+      lastY = null;
+      currentAngle = targetAngle = Math.PI / 4;
+    });
+
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) wake();
+    });
+  }
+
+  initLightSource();
+</script>

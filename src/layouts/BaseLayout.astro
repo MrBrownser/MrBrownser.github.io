@@ -3,6 +3,7 @@ import "@fontsource-variable/inter";
 import "@fontsource-variable/fraunces";
 import "@/styles/global.css";
 import Nav from "@/components/Nav.astro";
+import LightSource from "@/components/LightSource.astro";
 import { site } from "@/lib/site";
 
 export interface Props {
@@ -73,5 +74,6 @@ const personSchema = {
     <main id="main">
       <slot />
     </main>
+    <LightSource />
   </body>
 </html>
