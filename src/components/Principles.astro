@@ -7,12 +7,13 @@ const { principles } = site;
 <Section id="principles" number={principles.sectionNumber} label={principles.sectionLabel}>
   <ul class="grid gap-5 sm:grid-cols-2">
     {
-      principles.items.map((item, index) => (
+      /* No card numbers: they used the same mono/accent treatment as the section
+         rail numbers, so "04" appeared twice on screen meaning two things. */
+      principles.items.map((item) => (
         <li class="neu-card flex flex-col gap-3 p-6 md:p-7">
-          <span class="font-mono text-xs font-semibold tabular-nums text-accent" aria-hidden="true">
-            {String(index + 1).padStart(2, "0")}
-          </span>
-          <h3 class="display text-xl font-semibold text-foreground">{item.title}</h3>
+          <h3 class="display text-xl font-semibold text-foreground">
+            <span class="mr-2 text-accent" aria-hidden="true">/</span>{item.title}
+          </h3>
           <p class="text-[0.9375rem] leading-relaxed text-muted-foreground">{item.body}</p>
         </li>
       ))

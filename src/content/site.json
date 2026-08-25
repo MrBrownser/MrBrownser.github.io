@@ -19,9 +19,19 @@
     "primaryCta": "Explore my journey",
     "secondaryCta": "Get in touch",
     "facts": [
-      { "label": "Based in", "value": "Barcelona" },
-      { "label": "Currently", "value": "Videocation.no", "href": "https://videocation.no" },
-      { "label": "Languages", "value": "EN · ES · CA" }
+      {
+        "label": "Based in",
+        "value": "Barcelona"
+      },
+      {
+        "label": "Currently",
+        "value": "Videocation.no",
+        "href": "https://videocation.no"
+      },
+      {
+        "label": "Languages",
+        "value": "EN · ES · CA"
+      }
     ]
   },
   "about": {
@@ -32,8 +42,8 @@
     "cardHeadlineAfter": ".",
     "paragraphs": [
       "I run product and technology at Videocation, a Norwegian B2B learning company. Product, engineering, architecture, delivery and hiring all sit with me, which means I get to close the loop between what we decide to build and what actually reaches a customer.",
-      "I did not start here. My first decade was ERP: customising Logic Class for Spanish companies, migrating them off legacy accounting systems, and becoming the person who handled the deployments. Deploying Sage CRM on Windows Server was my first real contact with web services. I take things apart to understand how they were made, and I keep asking why until there are no layers left, so one web application was never going to be the end of it.",
-      "So in 2015 I stopped, went to a bootcamp, and rebuilt my career from the bottom. Agency work, then a startup where I became technical lead, then four years at Haufe Group building microservices on Kubernetes. In 2021 I joined Videocation as a full stack engineer and grew through four roles in as many years.",
+      "I did not start here. My first seven years were ERP: customising Logic Class for Spanish companies, migrating them off legacy accounting systems, and becoming the person who handled the deployments. Deploying Sage CRM on Windows Server was my first real contact with web services. I take things apart to understand how they were made, and I keep asking why until there are no layers left, so one web application was never going to be the end of it.",
+      "So in 2015, at 27, I stopped, went to a bootcamp, and rebuilt my career from the bottom. Agency work, then a startup where I became technical lead, then four years at Haufe Group building microservices on Kubernetes. In 2021 I joined Videocation as a full stack engineer and grew through four roles in as many years.",
       "In 2025 I finished a Master's in Digital Product Management at Nuclio Digital School, where our final project was picked as the best of the cohort. But I have always been a product developer at heart, motivated by solving the problem in front of me rather than by best practices for their own sake."
     ],
     "roleParagraph": null
@@ -57,7 +67,11 @@
       "organization": "Sage (via Servitel)",
       "description": "Started my career customising the Logic Class ERP to customer requirements, then moved onto the migrations team and moved customers off legacy Sage products onto it. Years of hands-on SQL, and where I started doing application deployments.",
       "type": "work",
-      "tags": ["ERP", "SQL", "Data Migration"]
+      "tags": [
+        "ERP",
+        "SQL",
+        "Data Migration"
+      ]
     },
     {
       "date": "2013 – 2015",
@@ -65,7 +79,11 @@
       "organization": "Sage Spain",
       "description": "Moved with my team from the subsidiary into Sage Spain itself. Same technical work, now customer-facing. Deployments became my specialism, on Logic Class and then Sage Murano. Sage CRM was in that set too, an on-premise web app on Windows Server, and my first real work with web services.",
       "type": "work",
-      "tags": ["Consulting", "Deployments", "Sage CRM"]
+      "tags": [
+        "Consulting",
+        "Deployments",
+        "Sage CRM"
+      ]
     },
     {
       "date": "2014",
@@ -87,7 +105,12 @@
       "organization": "Season",
       "description": "Client projects at a development agency across Ruby on Rails, Drupal and JavaScript. Drupal meant learning PHP from scratch, which I did on the job. I took the operations side too: scripted deployments and provisioning, and fixed production servers when they broke.",
       "type": "work",
-      "tags": ["Ruby on Rails", "Drupal", "Ansible", "Capistrano"]
+      "tags": [
+        "Ruby on Rails",
+        "Drupal",
+        "Ansible",
+        "Capistrano"
+      ]
     },
     {
       "date": "2016 – 2017",
@@ -95,7 +118,12 @@
       "organization": "DenDen",
       "description": "A startup with a mixed team, working hard to find product market fit. I architected the backend and frontend requirements and ran the technical screening for the engineer we hired. Shipped Forbidden City, an augmented reality iOS game built to get people into the shops in their own neighbourhood. The real problem was gamification: how to make the work we needed from users worth doing.",
       "type": "work",
-      "tags": ["React Native", "Firebase", "MeteorJS", "Gamification"]
+      "tags": [
+        "React Native",
+        "Firebase",
+        "MeteorJS",
+        "Gamification"
+      ]
     },
     {
       "date": "2017 – 2021",
@@ -103,7 +131,15 @@
       "organization": "Haufe Group",
       "description": "On a team set up to test new business ideas and build out the ones that worked. Two app prototypes in six months, one of which went to production and shipped on both the App Store and Google Play. I owned features end to end, from shaping the idea through to the infrastructure they ran on. Also one of the cultural fit interviewers in the group's hiring process.",
       "type": "work",
-      "tags": ["React", "React Native", "Node.js", "Kubernetes", "Azure", "Jenkins", "Python"]
+      "tags": [
+        "React",
+        "React Native",
+        "Node.js",
+        "Kubernetes",
+        "Azure",
+        "Jenkins",
+        "Python"
+      ]
     },
     {
       "date": "2021 – Present",
@@ -111,7 +147,12 @@
       "organization": "Videocation.no",
       "description": "Four roles in four years at a Norwegian B2B learning company. Today product, engineering, architecture, delivery and hiring all sit with me. I redesigned the SDLC around AI-assisted development, rewrote the Product Engineer job description and the interview that goes with it, and lead the vision for a platform thousands of professionals learn on.",
       "type": "work",
-      "tags": ["Product Management", "Leadership", "Hiring", "AI-assisted SDLC"]
+      "tags": [
+        "Product Management",
+        "Leadership",
+        "Hiring",
+        "AI-assisted SDLC"
+      ]
     },
     {
       "date": "2024 – 2025",
@@ -128,13 +169,14 @@
     "cardHeadlineHighlight": "hard part",
     "cardHeadlineAfter": ".",
     "paragraphs": [
-      "The way I work has changed more in the last two years than in the previous ten. AI did not just add tools to my workflow, it changed what a workflow is. Ideation, research, code, review, delivery: I have rebuilt each of those steps around having a thinking partner that never gets tired of being questioned.",
-      "Adopting the tools is the easy half. The harder half is staying willing to throw away what worked yesterday. I have had to unlearn as much as I have learned, and that has been the most valuable part of it."
+      "Early on I cared a great deal about clean code, patterns and finding the right abstraction, and I got good at it. What took longer was learning when any of it was actually needed. A team can spend weeks improving structure and refactoring: sometimes that is precisely the work, and sometimes it is craft for the satisfaction of doing craft. Seniority, for me, is being able to tell those two apart.",
+      "Now that the budget is mine to answer for, the distinction stopped being academic. Time spent on quality nobody will ever feel is time the roadmap does not get. So what I look for is the minimum that does the job properly: as simple as possible, not simpler.",
+      "AI is the current version of the same problem. It has changed how I work more in two years than anything did in the ten before it, and the difficult part was never learning the tools. It was being willing to throw out a workflow that still worked. I have had to unlearn about as much as I have learned."
     ],
-    "quote": "The best tool is the one that makes you rethink how you work.",
+    "quote": "Best practices are downstream of a shipped product.",
     "closingParagraphs": [
-      "I do not just practise this on my own. Leading by example means showing rather than telling: pairing with engineers on AI-assisted development, running experiments on our product workflows, and giving the team room to adapt at their own pace. The goal is not to chase trends. It is to make continuous learning the default, which is a good thing to believe at a company that sells learning.",
-      "Technology moves fast. The engineers and product leaders who thrive are not the ones who know the most, they are the ones who adapt the fastest."
+      "Leading this is mostly not a matter of telling people. It is pairing on the AI-assisted work, running the experiments on our own workflows first, and handing my own proposals to the engineers to pull apart before any of it becomes how we work. Ideas get the same treatment: the good ones tend to come from a group that has gone and looked properly on their own, then argued it out somewhere it is safe to be wrong.",
+      "It helps that I do this at a company that sells learning. Making continuous learning the default is easier when it is also the product."
     ]
   },
   "principles": {
@@ -146,16 +188,16 @@
         "body": "Deciding what to build and being accountable for it reaching a customer should not be two different jobs. When they are, everyone optimises their half."
       },
       {
-        "title": "Start over when you have to",
-        "body": "I threw away a decade of ERP career at 29 to go back to being a junior. It was the best decision I have made. The same instinct applies to code, process and opinions."
-      },
-      {
-        "title": "Hire for the questions",
-        "body": "I have been involved in hiring at three companies over ten years. The signal I look for is what someone does when they do not know the answer, not the list of things they already know."
-      },
-      {
         "title": "Ship, then learn",
-        "body": "Best practices are downstream of a shipped product. I would rather have something real in front of a user this week than something correct in three months."
+        "body": "I would rather put something real in front of a user this week than something correct on paper in three months. Whatever you got wrong surfaces sooner, and you fix it against reality instead of against an argument."
+      },
+      {
+        "title": "Keep asking why",
+        "body": "I take things apart to find out how they were made. The real problem is usually two or three layers under the one you were handed, and you only get there by asking why one more time than feels comfortable."
+      },
+      {
+        "title": "Credit goes to the team",
+        "body": "No feature has a single author. Someone writes it, someone reviews it, someone finds the bug nobody expected. So delivery is attributed to the team rather than to individuals, for the same reason nobody wins a football match on their own."
       }
     ]
   },
@@ -169,9 +211,21 @@
     "cta": "Email me",
     "email": "castany.adria@gmail.com",
     "socials": [
-      { "href": "https://www.linkedin.com/in/adriacastany", "label": "LinkedIn", "icon": "linkedin" },
-      { "href": "https://github.com/mrbrownser", "label": "GitHub", "icon": "github" },
-      { "href": "https://twitter.com/mrbrownser", "label": "Twitter / X", "icon": "twitter" }
+      {
+        "href": "https://www.linkedin.com/in/adriacastany",
+        "label": "LinkedIn",
+        "icon": "linkedin"
+      },
+      {
+        "href": "https://github.com/mrbrownser",
+        "label": "GitHub",
+        "icon": "github"
+      },
+      {
+        "href": "https://twitter.com/mrbrownser",
+        "label": "Twitter / X",
+        "icon": "twitter"
+      }
     ]
   },
   "footer": {
