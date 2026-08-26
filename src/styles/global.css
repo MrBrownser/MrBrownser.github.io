@@ -225,6 +225,13 @@ body::after {
   .neu-icon:hover {
     box-shadow: var(--neu-flat);
   }
+  /* A control whose sensor turned out not to exist. Reads as present but inert,
+     rather than vanishing and leaving the row jumping about. */
+  .neu-icon[aria-disabled="true"] {
+    box-shadow: var(--neu-flat);
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
 
   .timeline-line {
     background: linear-gradient(
