@@ -1,31 +1,27 @@
 ---
+import { Picture } from "astro:assets";
 import { site } from "@/lib/site";
+import portrait from "@/assets/profile.jpg";
 const { hero } = site;
 ---
 
 <section id="hero" class="relative flex min-h-[100svh] flex-col justify-center px-6 pb-20 pt-28" aria-label="Introduction">
   <div class="hero-stack mx-auto flex w-full max-w-4xl flex-col items-center gap-9 text-center">
     <div class="hero-plate neu-sm rounded-full p-2.5" style="background-color: var(--background)">
-      <div class="neu-in overflow-hidden rounded-full">
-        {
-          hero.hasAvatar ? (
-            <img
-              src="/images/avatar.jpg"
-              alt={hero.portraitAlt}
-              width="176"
-              height="176"
-              class="h-28 w-28 rounded-full object-cover md:h-36 md:w-36"
-              fetchpriority="high"
-            />
-          ) : (
-            <span
-              class="display flex h-28 w-28 items-center justify-center rounded-full text-3xl font-semibold text-accent md:h-36 md:w-36 md:text-4xl"
-              aria-hidden="true"
-            >
-              {hero.avatarInitials}
-            </span>
-          )
-        }
+      <div class="hero-portrait relative overflow-hidden rounded-full">
+        <Picture
+          src={portrait}
+          alt={hero.portraitAlt}
+          formats={["avif", "webp"]}
+          fallbackFormat="jpeg"
+          widths={[112, 144, 224, 288, 432]}
+          width={432}
+          height={432}
+          sizes="(min-width: 768px) 144px, 112px"
+          class="h-28 w-28 rounded-full object-cover md:h-36 md:w-36"
+          loading="eager"
+          fetchpriority="high"
+        />
       </div>
     </div>
 
@@ -76,6 +72,17 @@ const { hero } = site;
 </section>
 
 <style>
+  /* An inset box-shadow paints behind child content, so the plate's inner rim
+     needs its own layer to sit on top of the photo. */
+  .hero-portrait::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 9999px;
+    box-shadow: var(--neu-inset);
+    pointer-events: none;
+  }
+
   /* Short laptop windows: the hero must not push its own CTAs below the fold. */
   @media (max-height: 780px) and (min-width: 640px) {
     #hero {
@@ -85,10 +92,9 @@ const { hero } = site;
     .hero-stack {
       gap: 1.5rem;
     }
-    .hero-plate :is(img, span) {
+    .hero-plate img {
       height: 5rem;
       width: 5rem;
-      font-size: 1.5rem;
     }
     #hero h1 {
       font-size: 3.25rem;

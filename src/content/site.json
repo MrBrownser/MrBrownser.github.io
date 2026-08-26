@@ -10,10 +10,8 @@
     "navInitials": "ACS"
   },
   "hero": {
-    "hasAvatar": false,
     "name": "Adrià Castany Serrano",
     "portraitAlt": "Portrait of Adrià Castany Serrano",
-    "avatarInitials": "ACS",
     "tagline": "Head of Product & Tech",
     "subtagline": "I lead product and engineering as one function. {{Years}} years of shipping, from ERP data migrations to running a learning platform used by thousands of professionals.",
     "primaryCta": "Explore my journey",

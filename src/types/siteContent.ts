@@ -36,10 +36,8 @@ export interface SiteContent {
   };
   brand: { navInitials: string };
   hero: {
-    hasAvatar: boolean;
     name: string;
     portraitAlt: string;
-    avatarInitials: string;
     tagline: string;
     subtagline: string;
     primaryCta: string;
