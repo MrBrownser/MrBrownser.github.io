@@ -141,10 +141,24 @@
     const mayHaveSensor =
       Boolean(DeviceOrientation) && (needsPermission || window.matchMedia("(pointer: coarse)").matches);
 
+    /* Android is uneven here. Plenty of devices never fire `deviceorientation`
+       at all — it wants a gyroscope — but do fire `deviceorientationabsolute`,
+       which is derived from the magnetometer. Subscribe to both and use whichever
+       actually arrives. */
+    const ORIENTATION_EVENTS = ["deviceorientation", "deviceorientationabsolute"];
+    // If nothing usable has arrived by now, no sensor is coming.
+    const SENSOR_TIMEOUT = 1500;
+
     let restBeta: number | null = null;
+    let sensorSeen = false;
+    let watchdog = 0;
 
     function onOrientation(event: DeviceOrientationEvent) {
+      // A browser can deliver the event with every field null — Brave's
+      // fingerprinting shield does exactly this. That is a dead sensor, not a
+      // reading, so it must not count as proof of life.
       if (event.beta === null && event.gamma === null) return;
+      sensorSeen = true;
       // Calibrate to however the phone is actually being held, so the light
       // starts overhead instead of wherever a nominal flat-on-a-table pose is.
       if (restBeta === null) restBeta = event.beta ?? 45;
@@ -166,32 +180,64 @@
       aim(-nx, ny);
     }
 
+    function listen(on: boolean) {
+      for (const name of ORIENTATION_EVENTS) {
+        if (on) window.addEventListener(name, onOrientation as EventListener);
+        else window.removeEventListener(name, onOrientation as EventListener);
+      }
+    }
+
     function setTilting(on: boolean) {
       tilting = on;
       button?.setAttribute("aria-pressed", String(on));
       button?.setAttribute("aria-label", on ? "Stop steering the light by tilting" : "Steer the light by tilting");
       if (!on) {
-        window.removeEventListener("deviceorientation", onOrientation);
+        listen(false);
         restBeta = null;
         rest();
       }
     }
 
+    /* A button that latches on while nothing moves is worse than no button. If
+       the sensor never reports, say so on the control itself rather than leaving
+       it looking enabled. */
+    function markUnavailable() {
+      window.clearTimeout(watchdog);
+      listen(false);
+      tilting = false;
+      restBeta = null;
+      if (button) {
+        const reason = "Motion sensor unavailable in this browser";
+        button.setAttribute("aria-pressed", "false");
+        button.setAttribute("aria-disabled", "true");
+        button.setAttribute("aria-label", reason);
+        button.setAttribute("title", reason);
+        button.dataset.sensor = "unavailable";
+      }
+      rest();
+    }
+
     if (button && mayHaveSensor) {
       button.classList.remove("hidden");
       button.addEventListener("click", async () => {
+        if (button.getAttribute("aria-disabled") === "true") return;
         if (tilting) return setTilting(false);
         try {
           if (needsPermission) {
             // iOS only grants this from inside the gesture, which is the whole
             // reason this is a button and not an automatic upgrade.
             const result = await DeviceOrientation!.requestPermission!();
-            if (result !== "granted") return;
+            if (result !== "granted") return markUnavailable();
           }
-          window.addEventListener("deviceorientation", onOrientation);
+          sensorSeen = false;
+          listen(true);
           setTilting(true);
+          window.clearTimeout(watchdog);
+          watchdog = window.setTimeout(() => {
+            if (!sensorSeen) markUnavailable();
+          }, SENSOR_TIMEOUT);
         } catch {
-          /* sensor refused or unavailable; the pointer path still works */
+          markUnavailable();
         }
       });
     }
