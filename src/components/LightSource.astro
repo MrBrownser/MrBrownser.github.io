@@ -138,8 +138,12 @@
     // Desktop Chrome defines DeviceOrientationEvent, so its presence proves
     // nothing on its own. Require a real sensor gate: iOS's permission API, or
     // a device that at least claims a coarse pointer.
+    // Reduced motion pins the light, so tilting could not do anything. Offering
+    // the control anyway would be the same dead button as on Brave.
     const mayHaveSensor =
-      Boolean(DeviceOrientation) && (needsPermission || window.matchMedia("(pointer: coarse)").matches);
+      Boolean(DeviceOrientation) &&
+      !reduceMotion.matches &&
+      (needsPermission || window.matchMedia("(pointer: coarse)").matches);
 
     /* Android is uneven here. Plenty of devices never fire `deviceorientation`
        at all — it wants a gyroscope — but do fire `deviceorientationabsolute`,
@@ -287,6 +291,10 @@
 
     reduceMotion.addEventListener("change", () => {
       if (!reduceMotion.matches) return;
+      // Switched on mid-session: stop tilting, take the control away, and put
+      // the light back where the static design has it.
+      if (tilting) setTilting(false);
+      button?.classList.add("hidden");
       root.style.removeProperty("--lx");
       root.style.removeProperty("--ly");
       lastX = null;
