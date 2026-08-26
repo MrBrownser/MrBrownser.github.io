@@ -19,22 +19,20 @@
     // Rest state (1, 1) is the fixed top-left light the design shipped with.
     // Everything below is a rotation of a vector with this magnitude.
     const REST = Math.SQRT2;
-    // Neumorphism reads as depth only while the viewer can assume light from
-    // above. Let the light swing freely left and right, but never let it drop
-    // below the horizon, or raised cards start reading as holes.
-    const MIN_DOWN = 0.34;
     // Below this the shadow change is invisible, so writing it is pure cost.
     const EPSILON = 0.004;
     const EASE = 0.12;
     // Degrees of phone tilt that map to the full horizontal swing.
     const TILT_RANGE = 32;
     /* Both inputs land on the same mapping: a horizontal term and a vertical one
-       composed against a constant overhead bias. The bias is what gives the
+       composed against a small constant bias. The bias only exists to give the
        neutral input — cursor at the centre, phone held flat — a stable answer of
-       "light directly above" instead of a degenerate atan2(0, 0). */
-    const OVERHEAD_BIAS = 0.62;
+       "light directly above" instead of a degenerate atan2(0, 0). It is kept well
+       under the vertical swing so the light still travels the full circle and can
+       genuinely come from below. */
+    const OVERHEAD_BIAS = 0.35;
     const HORIZONTAL_SWING = 1.15;
-    const VERTICAL_SWING = 0.75;
+    const VERTICAL_SWING = 1.05;
 
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
@@ -45,16 +43,14 @@
     let running = false;
     let tilting = false;
 
-    /* Clamp the vector into the upper half while preserving its length, so the
-       light slides along the horizon instead of losing depth as it gets there. */
+    /* The light travels the full circle. Nothing constrains it to the upper half:
+       lit from below, a raised surface reads as a recess and the depth flips.
+       That inversion is deliberate — it is the most legible sign that the light
+       is really being steered, and it was preferred over the safer clamped
+       version when the two were compared side by side. Magnitude is constant, so
+       the amount of depth never changes even as its direction does. */
     function vectorFor(angle: number): [number, number] {
-      let x = Math.cos(angle) * REST;
-      let y = Math.sin(angle) * REST;
-      if (y < REST * MIN_DOWN) {
-        y = REST * MIN_DOWN;
-        x = Math.sign(x || 1) * Math.sqrt(Math.max(REST * REST - y * y, 0));
-      }
-      return [x, y];
+      return [Math.cos(angle) * REST, Math.sin(angle) * REST];
     }
 
     function frame() {

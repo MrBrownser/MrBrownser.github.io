@@ -70,17 +70,25 @@ properties resolve at their *declaration site*, so a `--neu-raised` declared on
 inlining the `calc()` into every component rule. Measured cost of the two models
 is identical (see below), so there is no performance reason to pay that price.
 
-### Keeping the light overhead
+### Letting the light travel the whole circle
 
-Neumorphism depends on the viewer assuming light comes from above. If the light
-swings below the horizon, raised cards start reading as recesses and the whole
-design inverts.
+Neumorphism depends on the viewer assuming light comes from above. Swing the light
+below the horizon and raised cards start reading as recesses: the depth inverts.
 
-The engine therefore clamps the vertical component so the dark shadow always keeps
-a downward bias (`--ly >= sqrt(2) * 0.34`), while the horizontal swing stays fully
-free. When the clamp engages, the horizontal component is recomputed to preserve
-the vector's magnitude, so depth stays constant as the light slides along the
-clamp.
+The first implementation clamped the vertical component to prevent that. Comparing
+the two side by side in the prototype, the unclamped version was preferred and the
+clamp was removed. Lighting the page from below is now reachable, and the inversion
+is deliberate: it is the clearest signal that the light is genuinely being steered,
+and because every surface flips together it reads as a light move rather than as
+broken depth.
+
+The vector's magnitude is still pinned, so the amount of depth never changes even
+as its direction does — only which way the surfaces appear to face.
+
+The mapping keeps a small constant overhead bias (0.35 against a vertical swing of
+1.05). Its only job is to give the neutral input a stable answer of "light directly
+above"; it is deliberately far smaller than the swing so it never constrains the
+travel. Cursor at the bottom edge puts the light directly below.
 
 ### Input: pointer
 
@@ -112,9 +120,8 @@ orientation angle onto the same target vector the pointer path feeds. 32 degrees
 tilt gives the full swing.
 
 Tilting left moves the light left, tilting right moves it right, and holding the
-phone at the calibrated rest pose puts the light directly overhead. The vertical
-range of the tilt mapping never reaches the clamp, so the clamp is a safety net
-here rather than an active constraint.
+phone at the calibrated rest pose puts the light directly overhead. Tilting far
+enough forward carries it past the horizon, same as the pointer path.
 
 ### Accessibility and restraint
 
