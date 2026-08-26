@@ -1,7 +1,7 @@
 # Dynamic light direction
 
 Date: 2026-08-26
-Status: approved, implemented on `feat/dynamic-light`
+Status: implemented — https://github.com/MrBrownser/MrBrownser.github.io/pull/1
 
 ## The idea
 
@@ -153,7 +153,9 @@ enough forward carries it past the horizon, same as the pointer path.
 
 - `prefers-reduced-motion: reduce` disables the engine entirely; the vector stays
   at `(1, 1)`. The media query is watched live, so toggling the OS setting takes
-  effect without a reload.
+  effect without a reload. The tilt control is withheld under it too — with the
+  light pinned, tilting could not do anything, and offering a control that does
+  nothing is the same defect as offering it on Brave.
 - The engine pauses on `visibilitychange` when the tab is hidden.
 - Shadows carry depth and never meaning, which is already the rule stated at the
   top of `global.css`. Since only direction changes and magnitude is fixed, no
