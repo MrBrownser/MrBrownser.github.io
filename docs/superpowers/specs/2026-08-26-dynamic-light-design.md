@@ -108,10 +108,36 @@ Gated behind a button, because it must be. iOS 13+ requires
 `DeviceOrientationEvent.requestPermission()` to be called from inside a user
 gesture, so there is no way to enable this without an explicit tap.
 
-The button is hidden by default and revealed by script only when the sensor is
-plausibly real: `DeviceOrientationEvent` exists *and* either `requestPermission`
-is a function (iOS) or the device reports a coarse pointer. `DeviceOrientationEvent`
-alone is not a sufficient test — desktop Chrome defines it.
+The engine listens for `deviceorientationabsolute` as well as `deviceorientation`.
+Many Android devices never fire the latter — it wants a gyroscope — but do fire
+the former, which is derived from the magnetometer. Listening only for
+`deviceorientation` left the feature dead on Android Chrome.
+
+The button is hidden by default and revealed only once the sensor has proved it
+can do something.
+
+`DeviceOrientationEvent` alone is not a sufficient test — desktop Chrome defines
+it without having a sensor — so the first gate is that gate plus either
+`requestPermission` (iOS) or a coarse pointer.
+
+Past that gate the two platforms differ. On Chromium the sensor streams with no
+permission at all, so the script subscribes quietly on load and waits for one
+reading with real values before revealing anything. On iOS readings are gated
+behind a permission that can only be requested from inside a user gesture, so
+there is nothing to probe until the user has already tapped; there the control
+appears on faith and a watchdog catches a refusal.
+
+Three behaviours this has to survive, all confirmed against the built site:
+
+| Browser behaviour | Result |
+|---|---|
+| Sensor never fires (Brave shield) | button never appears |
+| Events fire with every field null (Brave shield) | button never appears |
+| Only `deviceorientationabsolute` fires (much of Android) | button appears, works |
+
+Brave blocks motion sensors deliberately, as a fingerprinting countermeasure.
+There is no way to make tilt work there and no reason to try, so the control is
+simply absent and the pointer path carries the page.
 
 On activation the handler calibrates: the first reading's `beta` becomes the neutral
 rest pose, so it works however the phone happens to be held. Subsequent readings map

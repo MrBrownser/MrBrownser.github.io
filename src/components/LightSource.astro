@@ -148,6 +148,8 @@
     const ORIENTATION_EVENTS = ["deviceorientation", "deviceorientationabsolute"];
     // If nothing usable has arrived by now, no sensor is coming.
     const SENSOR_TIMEOUT = 1500;
+    // How long the silent probe waits for proof of a live sensor before giving up.
+    const PROBE_TIMEOUT = 2000;
 
     let restBeta: number | null = null;
     let sensorSeen = false;
@@ -217,8 +219,47 @@
       rest();
     }
 
+    /* Reveal the control only once we know it can do something.
+
+       On Chromium the sensor streams without any permission, so we can subscribe
+       quietly on load and wait for one real reading before showing anything.
+       Brave's fingerprinting shield never produces one — by design, it treats
+       motion as a tracking vector — so on Brave the button simply never appears
+       rather than appearing and refusing to work.
+
+       iOS is the exception: readings are gated behind a permission that can only
+       be requested from inside a user gesture, so there is nothing to probe until
+       the user has already tapped. There the control has to appear on faith, and
+       the watchdog is what catches a refusal. */
+    function reveal() {
+      button?.classList.remove("hidden");
+    }
+
+    function probeForSensor() {
+      let settled = false;
+      const finish = (found: boolean) => {
+        if (settled) return;
+        settled = true;
+        window.clearTimeout(timer);
+        for (const name of ORIENTATION_EVENTS) {
+          window.removeEventListener(name, onProbe as EventListener);
+        }
+        if (found) reveal();
+      };
+      const onProbe = (event: DeviceOrientationEvent) => {
+        if (event.beta === null && event.gamma === null) return;
+        finish(true);
+      };
+      for (const name of ORIENTATION_EVENTS) {
+        window.addEventListener(name, onProbe as EventListener);
+      }
+      const timer = window.setTimeout(() => finish(false), PROBE_TIMEOUT);
+    }
+
     if (button && mayHaveSensor) {
-      button.classList.remove("hidden");
+      if (needsPermission) reveal();
+      else probeForSensor();
+
       button.addEventListener("click", async () => {
         if (button.getAttribute("aria-disabled") === "true") return;
         if (tilting) return setTilting(false);
