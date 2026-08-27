@@ -5,6 +5,7 @@ import "@/styles/global.css";
 import Nav from "@/components/Nav.astro";
 import LightSource from "@/components/LightSource.astro";
 import { site } from "@/lib/site";
+import portrait from "@/assets/profile.jpg";
 
 export interface Props {
   title?: string;
@@ -16,6 +17,13 @@ const title = Astro.props.title ?? meta.pageTitle;
 const description = Astro.props.description ?? meta.pageDescription;
 const canonical = new URL(Astro.url.pathname, Astro.site ?? meta.siteUrl);
 const ogImage = new URL(meta.ogImage, Astro.site ?? meta.siteUrl);
+const portraitUrl = new URL(portrait.src, Astro.site ?? meta.siteUrl);
+
+/** Twitter's handle tags take @name, and the profile URL in site.json is the only record of it. */
+const twitterProfile = contact.socials.find((social) => social.icon === "twitter")?.href;
+const twitterHandle = twitterProfile
+  ? `@${new URL(twitterProfile).pathname.replace(/\//g, "")}`
+  : undefined;
 
 const personSchema = {
   "@context": "https://schema.org",
@@ -23,6 +31,7 @@ const personSchema = {
   name: site.footer.copyrightName,
   jobTitle: hero.tagline,
   url: meta.siteUrl,
+  image: portraitUrl.href,
   email: `mailto:${contact.email}`,
   address: { "@type": "PostalAddress", addressLocality: "Barcelona", addressCountry: "ES" },
   worksFor: { "@type": "Organization", name: "Videocation.no", url: "https://videocation.no" },
@@ -41,14 +50,27 @@ const personSchema = {
     <link rel="canonical" href={canonical} />
 
     <meta property="og:type" content="profile" />
+    <meta property="og:site_name" content={meta.siteName} />
+    <meta property="og:locale" content={meta.ogLocale} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogImage} />
+    <meta property="og:image:type" content={meta.ogImageType} />
+    <!-- WhatsApp lays the card out before the image lands, so it needs the dimensions up front. -->
+    <meta property="og:image:width" content={String(meta.ogImageWidth)} />
+    <meta property="og:image:height" content={String(meta.ogImageHeight)} />
+    <meta property="og:image:alt" content={meta.ogImageAlt} />
+    <meta property="profile:first_name" content={meta.profile.firstName} />
+    <meta property="profile:last_name" content={meta.profile.lastName} />
+    <meta property="profile:username" content={meta.profile.username} />
     <meta name="twitter:card" content="summary_large_image" />
+    {twitterHandle && <meta name="twitter:site" content={twitterHandle} />}
+    {twitterHandle && <meta name="twitter:creator" content={twitterHandle} />}
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image:alt" content={meta.ogImageAlt} />
 
     <meta name="theme-color" content="#ece6df" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#23211e" media="(prefers-color-scheme: dark)" />

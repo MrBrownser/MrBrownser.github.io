@@ -1,10 +1,21 @@
 {
   "meta": {
     "siteUrl": "https://mrbrownser.github.io",
+    "siteName": "Adrià Castany Serrano",
     "pageTitle": "Adrià Castany Serrano — Head of Product & Tech",
     "pageDescription": "I run product and technology at Videocation, a Norwegian B2B learning company. {{Years}} years from ERP data migrations to leading product and engineering as one function.",
     "ogImage": "/og.jpg",
-    "locale": "en"
+    "ogImageAlt": "Share card: a portrait of Adrià Castany Serrano beside his name, the line \"Head of Product & Tech\", and mrbrownser.github.io.",
+    "ogImageWidth": 1200,
+    "ogImageHeight": 630,
+    "ogImageType": "image/jpeg",
+    "locale": "en",
+    "ogLocale": "en_US",
+    "profile": {
+      "firstName": "Adrià",
+      "lastName": "Castany Serrano",
+      "username": "mrbrownser"
+    }
   },
   "brand": {
     "navInitials": "ACS"
