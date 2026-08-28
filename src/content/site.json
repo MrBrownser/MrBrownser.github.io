@@ -42,7 +42,7 @@
       "I run product and technology at Videocation, a Norwegian B2B learning company. Product, engineering, architecture, delivery and hiring all sit with me, which means I get to close the loop between what we decide to build and what actually reaches a customer.",
       "I did not start here. My first seven years were ERP: customising Logic Class for Spanish companies, migrating them off legacy accounting systems, and becoming the person who handled the deployments. Deploying Sage CRM on Windows Server was my first real contact with web services. I take things apart to understand how they were made, and I keep asking why until there are no layers left, so one web application was never going to be the end of it.",
       "So in 2015, at 27, I stopped, went to a bootcamp, and rebuilt my career from the bottom. Agency work, then a startup where I became technical lead, then four years at Haufe Group building microservices on Kubernetes. In 2021 I joined Videocation as a full stack engineer and grew through four roles in as many years.",
-      "In 2025 I finished a Master's in Digital Product Management at Nuclio Digital School, where our final project was picked as the best of the cohort. But I have always been a product developer at heart, motivated by solving the problem in front of me rather than by best practices for their own sake."
+      "In 2025 I finished a Master's in Digital Product Management at Nuclio Digital School, where our final project was picked as the best of the cohort. But I have always been a product developer at heart, motivated by solving the problem in front of me."
     ],
     "roleParagraph": null
   },
@@ -168,10 +168,10 @@
     "cardHeadlineAfter": ".",
     "paragraphs": [
       "Early on I cared a great deal about clean code, patterns and finding the right abstraction, and I got good at it. What took longer was learning when any of it was actually needed. A team can spend weeks improving structure and refactoring: sometimes that is precisely the work, and sometimes it is craft for the satisfaction of doing craft. Seniority, for me, is being able to tell those two apart.",
-      "Now that the budget is mine to answer for, the distinction stopped being academic. Time spent on quality nobody will ever feel is time the roadmap does not get. So what I look for is the minimum that does the job properly: as simple as possible, not simpler.",
+      "Now that the budget is mine to answer for, the distinction stopped being academic. Time spent on polish nobody will ever notice is time the roadmap does not get. So what I look for is the minimum that does the job properly: as simple as possible, not simpler.",
       "AI is the current version of the same problem. It has changed how I work more in two years than anything did in the ten before it, and the difficult part was never learning the tools. It was being willing to throw out a workflow that still worked. I have had to unlearn about as much as I have learned."
     ],
-    "quote": "Best practices are downstream of a shipped product.",
+    "quote": "I judge quality by who will feel it.",
     "closingParagraphs": [
       "Leading this is mostly not a matter of telling people. It is pairing on the AI-assisted work, running the experiments on our own workflows first, and handing my own proposals to the engineers to pull apart before any of it becomes how we work. Ideas get the same treatment: the good ones tend to come from a group that has gone and looked properly on their own, then argued it out somewhere it is safe to be wrong.",
       "It helps that I do this at a company that sells learning. Making continuous learning the default is easier when it is also the product."
