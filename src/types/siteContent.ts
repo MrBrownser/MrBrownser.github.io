@@ -29,10 +29,24 @@ export interface Principle {
 export interface SiteContent {
   meta: {
     siteUrl: string;
+    siteName: string;
     pageTitle: string;
     pageDescription: string;
+    /** Site-relative; the layout absolutises it, and scripts/generate-og.mjs writes it. */
     ogImage: string;
+    ogImageAlt: string;
+    ogImageWidth: number;
+    ogImageHeight: number;
+    ogImageType: string;
+    /** Document language, for `<html lang>`. */
     locale: string;
+    /** Open Graph wants language_TERRITORY, which `lang` must not carry. */
+    ogLocale: string;
+    profile: {
+      firstName: string;
+      lastName: string;
+      username: string;
+    };
   };
   brand: { navInitials: string };
   hero: {

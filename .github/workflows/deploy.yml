@@ -36,6 +36,14 @@ jobs:
       - name: Type check
         run: npm run check
 
+      # The card bakes in the career year count, so the monthly rebuild that
+      # keeps the page honest cannot reach it — a committed JPEG would go on
+      # claiming last year's number. Regenerated into public/ on the way past
+      # rather than committed back, so the deployed card is always the fresh
+      # one and git never carries a generated file it did not need to.
+      - name: Rebuild the share card
+        run: node scripts/generate-og.mjs
+
       - name: Build
         run: npm run build
 
