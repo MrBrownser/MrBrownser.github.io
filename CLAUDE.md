@@ -61,10 +61,13 @@ entirely there, including mid-session if the preference changes.
 no custom response headers, no runtime content negotiation. If a solution needs
 any of those, say so instead of building something that cannot deploy.
 
-**`public/og.jpg` is a hand-made asset.** Regenerate it from
-`src/assets/profile-original.png` (the lossless original) rather than from an
-existing JPEG — see `src/assets/README.md`. It has drifted from the live site
-before, so keep the regeneration command documented.
+**`public/og.jpg` is a build product.** `node scripts/generate-og.mjs` rebuilds
+it — every string from `site.json`, the portrait from
+`src/assets/profile-original.png` (the lossless original), the palette from the
+`.dark` tokens. Never touch it by hand or rebuild it from an existing JPEG: it
+showed a retired monogram for months precisely because nothing tied it to the
+site. The deploy workflow regenerates it before every build, which is what stops
+the `{{Years}}` count baked into the card from contradicting the page.
 
 ## Conventions
 

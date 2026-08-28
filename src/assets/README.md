@@ -30,9 +30,12 @@ Every string on it comes from `site.json` (`meta.pageDescription`, `hero.name`,
 The script fails rather than writing a card over the 300KB WhatsApp accepts.
 
 Rerun it after changing `meta.pageDescription`, `hero.name`, `hero.tagline`, the
-avatar crop, or `meta.ogImageWidth` / `meta.ogImageHeight` — and once a year,
-since the card bakes in the `{{Years}}` count that the monthly rebuild keeps
-fresh on the page but cannot refresh inside a committed JPEG.
+avatar crop, or `meta.ogImageWidth` / `meta.ogImageHeight`, so the committed copy
+matches what you are looking at locally.
+
+The `{{Years}}` count baked into the card is not your problem: the deploy
+workflow regenerates the card before every build, so the deployed one always
+agrees with the page even when the committed copy has gone a year stale.
 
 Needs Node 22.18+ (it imports `years.ts` directly for that count) and a
 Chromium-family browser, which does the typesetting because sharp's freetype has
