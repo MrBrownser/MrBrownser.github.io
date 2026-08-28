@@ -67,24 +67,29 @@ const { brand } = site;
         aria-expanded="false"
         aria-controls="mobile-menu"
       >
-        <svg class="menu-open h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>
-        <svg class="menu-close hidden h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+        <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path class="menu-bar menu-bar-top" d="M4 7h16"></path>
+          <path class="menu-bar menu-bar-mid" d="M4 12h16"></path>
+          <path class="menu-bar menu-bar-bottom" d="M4 17h16"></path>
+        </svg>
       </button>
     </div>
   </nav>
 
-  <div id="mobile-menu" class="hidden px-6 pb-5 md:hidden">
-    <ul class="neu-card flex flex-col gap-1 p-2">
-      {
-        links.map((link) => (
-          <li>
-            <a href={link.href} class="mobile-link block rounded-lg px-4 py-3 text-sm font-medium text-foreground transition-colors hover:text-accent">
-              {link.label}
-            </a>
-          </li>
-        ))
-      }
-    </ul>
+  <div id="mobile-menu" class="md:hidden">
+    <div class="menu-panel px-6 pb-5">
+      <ul class="neu-card flex flex-col gap-1 p-2">
+        {
+          links.map((link) => (
+            <li>
+              <a href={link.href} class="mobile-link block rounded-lg px-4 py-3 text-sm font-medium text-foreground transition-colors hover:text-accent">
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
   </div>
 </header>
 
@@ -149,22 +154,48 @@ const { brand } = site;
 
     const menuBtn = document.getElementById("mobile-menu-btn");
     const menu = document.getElementById("mobile-menu");
+    const menuPanel = menu?.querySelector<HTMLElement>(".menu-panel");
+
+    // The open state lives on the header, which already carries it for the
+    // surface treatment. Everything else the panel and the icon do is CSS.
+    const menuIsOpen = () => header?.getAttribute("data-menu-open") === "true";
 
     function setMenu(open: boolean) {
-      menu?.classList.toggle("hidden", !open);
+      // display:none cannot be transitioned, so the panel travels between zero
+      // and a real height. Measured on each open so it follows the text size,
+      // and only when it measures at all — above the md breakpoint the panel is
+      // display:none and would report nothing to travel to.
+      if (open && menu && menuPanel?.offsetHeight) {
+        menu.style.setProperty("--menu-height", `${menuPanel.offsetHeight}px`);
+      }
       // The header is transparent at the top of the page. An open menu needs
       // its own surface or it floats over the hero with nothing behind it.
       header?.setAttribute("data-menu-open", String(open));
       menuBtn?.setAttribute("aria-expanded", String(open));
       menuBtn?.setAttribute("aria-label", open ? "Close menu" : "Open menu");
-      menuBtn?.querySelector(".menu-open")?.classList.toggle("hidden", open);
-      menuBtn?.querySelector(".menu-close")?.classList.toggle("hidden", !open);
     }
 
-    menuBtn?.addEventListener("click", () => setMenu(menu?.classList.contains("hidden") ?? true));
+    menuBtn?.addEventListener("click", () => setMenu(!menuIsOpen()));
     menu?.querySelectorAll(".mobile-link").forEach((l) => l.addEventListener("click", () => setMenu(false)));
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") setMenu(false);
+    });
+
+    // The panel covers most of a phone screen, so tapping past it is the first
+    // gesture anyone tries. pointerdown fires once for both touch and mouse;
+    // the button is left out of it so its own click still toggles rather than
+    // reopening what the dismissal just closed.
+    document.addEventListener("pointerdown", (e) => {
+      if (!menuIsOpen()) return;
+      const target = e.target as Node | null;
+      if (menu?.contains(target) || menuBtn?.contains(target)) return;
+      setMenu(false);
+    });
+
+    // A rotation while the panel is open would otherwise leave it clipped to a
+    // height measured for the old width.
+    window.addEventListener("resize", () => {
+      if (menuIsOpen()) setMenu(true);
     });
 
     // Only give the header a surface once the page has actually scrolled,
@@ -212,5 +243,51 @@ const { brand } = site;
   }
   .nav-link.is-active {
     color: var(--accent);
+  }
+
+  /* Collapsed rather than display:none, which is not animatable. visibility
+     keeps the closed links out of the tab order and the accessibility tree,
+     and transitions as a step so the panel stays on screen while it fades. */
+  #mobile-menu {
+    height: 0;
+    overflow: hidden;
+    visibility: hidden;
+    opacity: 0;
+    transition:
+      height 0.2s cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 0.16s ease-out,
+      visibility 0.2s;
+  }
+  #site-header[data-menu-open="true"] #mobile-menu {
+    height: var(--menu-height, auto);
+    visibility: visible;
+    opacity: 1;
+  }
+  .menu-panel {
+    transform: translateY(-0.5rem);
+    transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  #site-header[data-menu-open="true"] .menu-panel {
+    transform: none;
+  }
+
+  /* Three bars folding into two crossed ones. The origin is given in viewBox
+     units so it stays the centre of the icon, not of each bar's own box. */
+  .menu-bar {
+    transform-box: view-box;
+    transform-origin: 12px 12px;
+    transition:
+      transform 0.2s cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 0.12s ease-out;
+  }
+  #mobile-menu-btn[aria-expanded="true"] .menu-bar-top {
+    transform: rotate(45deg) translateY(5px);
+  }
+  #mobile-menu-btn[aria-expanded="true"] .menu-bar-mid {
+    opacity: 0;
+    transform: scaleX(0.4);
+  }
+  #mobile-menu-btn[aria-expanded="true"] .menu-bar-bottom {
+    transform: rotate(-45deg) translateY(-5px);
   }
 </style>
