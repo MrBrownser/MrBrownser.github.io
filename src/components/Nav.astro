@@ -77,7 +77,15 @@ const { brand } = site;
   </nav>
 
   <div id="mobile-menu" class="md:hidden">
-    <div class="menu-panel px-6 pb-5">
+    {/* The padding is clearance, not symmetry. The panel needs `overflow: hidden`
+        for its height transition, and tilt swings `--ly` to -1.414, so the card's
+        shadow pair casts about 25px past whichever edge the light has moved
+        behind. Against 0px of top padding the dark half was sliced off flat
+        while the other three sides kept their falloff, which reads as a
+        rendering glitch rather than as depth. 24px on every side leaves the
+        shadow whole at any angle. `overflow: clip` with `overflow-clip-margin`
+        is the precise tool and Safari does not have it yet. */}
+    <div class="menu-panel p-6">
       <ul class="neu-card flex flex-col gap-1 p-2">
         {
           links.map((link) => (

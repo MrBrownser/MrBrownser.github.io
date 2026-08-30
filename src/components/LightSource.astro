@@ -33,6 +33,18 @@
     const OVERHEAD_BIAS = 0.35;
     const HORIZONTAL_SWING = 1.15;
     const VERTICAL_SWING = 1.05;
+    /* Activation cue. Tapping the control while holding the phone still shows
+       nothing at all otherwise — the effect is real but only visible once you
+       happen to tilt. So the light swings off its resting angle and eases back,
+       which demonstrates the one thing that just changed instead of decorating
+       the fact that something did. Radians off rest, then how long the cue owns
+       the light before the sensor takes over. It is a rotation like any other,
+       so the pinned magnitude is untouched: the amount of depth never moves.
+       The swing has to clear the tilt neutral — a phone held flat aims the light
+       overhead, 45° off rest — by enough that the return reads as settling and
+       not as the light merely arriving somewhere. */
+    const CUE_SWING = 1.6;
+    const CUE_HOLD = 420;
 
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
@@ -158,6 +170,22 @@
     let restBeta: number | null = null;
     let sensorSeen = false;
     let watchdog = 0;
+    let cue = 0;
+
+    function endCue(settle: boolean) {
+      window.clearTimeout(cue);
+      cue = 0;
+      // Nothing to hand the light over to until a reading arrives, so it goes
+      // back to exactly where the static design has it.
+      if (settle) rest();
+    }
+
+    function playCue() {
+      targetAngle = Math.PI / 4 + CUE_SWING;
+      wake();
+      window.clearTimeout(cue);
+      cue = window.setTimeout(() => endCue(true), CUE_HOLD);
+    }
 
     function onOrientation(event: DeviceOrientationEvent) {
       // A browser can deliver the event with every field null — Brave's
@@ -168,6 +196,9 @@
       // Calibrate to however the phone is actually being held, so the light
       // starts overhead instead of wherever a nominal flat-on-a-table pose is.
       if (restBeta === null) restBeta = event.beta ?? 45;
+      // The cue owns the light for its brief run. A live stream arrives on the
+      // next frame and would otherwise erase it before anyone saw it.
+      if (cue) return;
 
       const gamma = event.gamma ?? 0;
       const beta = (event.beta ?? 45) - restBeta;
@@ -197,7 +228,10 @@
       tilting = on;
       button?.setAttribute("aria-pressed", String(on));
       button?.setAttribute("aria-label", on ? "Stop steering the light by tilting" : "Steer the light by tilting");
-      if (!on) {
+      if (on) {
+        playCue();
+      } else {
+        endCue(false);
         listen(false);
         restBeta = null;
         rest();
@@ -209,6 +243,7 @@
        it looking enabled. */
     function markUnavailable() {
       window.clearTimeout(watchdog);
+      endCue(false);
       listen(false);
       tilting = false;
       restBeta = null;
