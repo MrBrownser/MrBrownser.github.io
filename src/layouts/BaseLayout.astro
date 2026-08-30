@@ -5,6 +5,7 @@ import "@/styles/global.css";
 import Nav from "@/components/Nav.astro";
 import LightSource from "@/components/LightSource.astro";
 import { site } from "@/lib/site";
+import { buildSchemaGraph } from "@/lib/schema";
 import portrait from "@/assets/profile.jpg";
 
 export interface Props {
@@ -12,7 +13,7 @@ export interface Props {
   description?: string;
 }
 
-const { meta, hero, contact } = site;
+const { meta, contact } = site;
 const title = Astro.props.title ?? meta.pageTitle;
 const description = Astro.props.description ?? meta.pageDescription;
 const canonical = new URL(Astro.url.pathname, Astro.site ?? meta.siteUrl);
@@ -25,18 +26,7 @@ const twitterHandle = twitterProfile
   ? `@${new URL(twitterProfile).pathname.replace(/\//g, "")}`
   : undefined;
 
-const personSchema = {
-  "@context": "https://schema.org",
-  "@type": "Person",
-  name: site.footer.copyrightName,
-  jobTitle: hero.tagline,
-  url: meta.siteUrl,
-  image: portraitUrl.href,
-  email: `mailto:${contact.email}`,
-  address: { "@type": "PostalAddress", addressLocality: "Barcelona", addressCountry: "ES" },
-  worksFor: { "@type": "Organization", name: "Videocation.no", url: "https://videocation.no" },
-  sameAs: contact.socials.map((social) => social.href),
-};
+const schema = buildSchemaGraph({ canonical: canonical.href, portraitUrl: portraitUrl.href });
 ---
 
 <!doctype html>
@@ -78,7 +68,7 @@ const personSchema = {
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="sitemap" href="/sitemap-index.xml" />
 
-    <script is:inline type="application/ld+json" set:html={JSON.stringify(personSchema)} />
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(schema)} />
 
     <script is:inline>
       // Runs before first paint so the correct theme is never repainted.
