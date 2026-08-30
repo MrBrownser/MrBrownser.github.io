@@ -98,5 +98,5 @@ export interface SiteContent {
     email: string;
     socials: SocialLink[];
   };
-  footer: { note: string; copyrightName: string };
+  footer: { copyrightName: string };
 }
