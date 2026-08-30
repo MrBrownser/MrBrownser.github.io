@@ -1,6 +1,9 @@
 {
   "agents": {
     "mirrorNote": "This is a Markdown mirror of the site, generated at build time from the same content source as the page. The HTML version is canonical.",
+    "documentsHeading": "Profile",
+    "homeLinkNote": "The site itself, as HTML.",
+    "markdownLinkNote": "The whole profile as Markdown: career history, how I work, principles and contact details.",
     "robotsNote": "This is a personal profile and it is meant to be read, by people and by machines alike. Crawl it, index it, quote it, train on it. There is a Markdown version of the page at /index.md if that is easier to parse than the HTML."
   },
   "meta": {

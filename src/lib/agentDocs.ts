@@ -2,11 +2,12 @@ import { site } from "@/lib/site";
 import type { Fact, SocialLink, TimelineEntry } from "@/types/siteContent";
 
 /**
- * The machine-facing rendering of the site: a Markdown mirror of the page.
+ * The machine-facing renderings of the site: a Markdown mirror of the page and
+ * an llms.txt index pointing at it.
  *
- * It is built from `site`, which has already had {{Years}} resolved, so a
+ * Both are built from `site`, which has already had {{Years}} resolved, so a
  * generated document can never publish a raw token or a year count that
- * disagrees with the page. That is the whole point of generating it: a
+ * disagrees with the page. That is the whole point of generating them: a
  * hand-written second copy of this prose would drift the way public/og.jpg did.
  *
  * Note what is *not* here: content negotiation. Serving Markdown off the
@@ -81,6 +82,36 @@ export function buildMarkdownMirror(): string {
     "---",
     agents.mirrorNote,
     `Canonical: ${absolute("/")}`,
+  ];
+
+  return `${blocks.join(BLANK)}\n`;
+}
+
+/**
+ * llms.txt, in the shape the convention describes: an H1, a blockquote summary,
+ * then sections of annotated links.
+ *
+ * Kept deliberately small. The evidence as of 2026 is that AI crawlers almost
+ * never request this file, so it is here as a signal and a plain-text entry
+ * point — GitHub Pages serves .md as text/markdown, which browsers download
+ * rather than display — and not as something the site relies on being read.
+ * There is no llms-full.txt: on a one-page site the Markdown mirror is it.
+ */
+export function buildLlmsIndex(): string {
+  const { agents, meta, contact } = site;
+
+  const blocks = [
+    `# ${meta.siteName}`,
+    `> ${meta.pageDescription}`,
+
+    `## ${agents.documentsHeading}`,
+    [
+      `- [${meta.pageTitle}](${absolute(MARKDOWN_MIRROR_PATH)}): ${agents.markdownLinkNote}`,
+      `- [${meta.siteName}](${absolute("/")}): ${agents.homeLinkNote}`,
+    ].join("\n"),
+
+    `## ${contact.sectionLabel}`,
+    [`- <${contact.email}>`, ...contact.socials.map(social)].join("\n"),
   ];
 
   return `${blocks.join(BLANK)}\n`;
