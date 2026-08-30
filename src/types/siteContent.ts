@@ -28,13 +28,15 @@ export interface Principle {
 
 export interface SiteContent {
   /**
-   * Prose for the machine-facing outputs. Lives here for the same reason
-   * every other string does:
+   * Prose for the machine-facing outputs (the Markdown mirror, robots.txt).
+   * Lives here for the same reason every other string does:
    * a generated document is still copy, and copy does not belong in code.
    */
   agents: {
     /** Says the Markdown mirror is generated and that the HTML is canonical. */
     mirrorNote: string;
+    /** Why this site is happy to be crawled, in a robots.txt comment. */
+    robotsNote: string;
   };
   meta: {
     siteUrl: string;
