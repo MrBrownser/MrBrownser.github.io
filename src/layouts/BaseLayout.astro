@@ -6,6 +6,7 @@ import Nav from "@/components/Nav.astro";
 import LightSource from "@/components/LightSource.astro";
 import { site } from "@/lib/site";
 import { buildSchemaGraph } from "@/lib/schema";
+import { MARKDOWN_MIRROR_PATH } from "@/lib/agentDocs";
 import portrait from "@/assets/profile.jpg";
 
 export interface Props {
@@ -67,6 +68,8 @@ const schema = buildSchemaGraph({ canonical: canonical.href, portraitUrl: portra
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="sitemap" href="/sitemap-index.xml" />
+    <!-- How an agent finds the Markdown mirror. Pages cannot negotiate on Accept. -->
+    <link rel="alternate" type="text/markdown" href={MARKDOWN_MIRROR_PATH} />
 
     <script is:inline type="application/ld+json" set:html={JSON.stringify(schema)} />
 

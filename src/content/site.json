@@ -1,4 +1,7 @@
 {
+  "agents": {
+    "mirrorNote": "This is a Markdown mirror of the site, generated at build time from the same content source as the page. The HTML version is canonical."
+  },
   "meta": {
     "siteUrl": "https://mrbrownser.github.io",
     "siteName": "Adrià Castany Serrano",
