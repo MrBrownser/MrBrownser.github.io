@@ -10,7 +10,29 @@
  * Nothing here changes contrast. The vector's magnitude is pinned, so only the
  * direction of depth moves, never its amount.
  */
+import { site } from "@/lib/site";
+
+const { permissionPrimer } = site.lightSource;
 ---
+
+{/* Only ever opened on the permission-gated path — iOS Safari — so it stays
+    display:none everywhere else. The panel is a child rather than the dialog
+    itself so a tap on the backdrop is distinguishable from a tap on the card's
+    padding, which is how light dismissal stays honest. */}
+<dialog id="tilt-primer" class="tilt-primer" aria-labelledby="tilt-primer-title">
+  <div class="neu-card p-6">
+    <h2 id="tilt-primer-title" class="display text-lg font-semibold text-foreground">
+      {permissionPrimer.title}
+    </h2>
+    <p class="mt-3 text-sm leading-relaxed text-muted-foreground">{permissionPrimer.body}</p>
+    <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+      <button id="tilt-primer-cancel" type="button" class="neu-btn">{permissionPrimer.cancel}</button>
+      <button id="tilt-primer-confirm" type="button" class="neu-btn-primary">
+        {permissionPrimer.confirm}
+      </button>
+    </div>
+  </div>
+</dialog>
 
 <script>
   function initLightSource() {
@@ -352,30 +374,89 @@
       const timer = window.setTimeout(() => finish(false), PROBE_TIMEOUT);
     }
 
+    function startTilting() {
+      sensorSeen = false;
+      listen(true);
+      setTilting(true);
+      window.clearTimeout(watchdog);
+      watchdog = window.setTimeout(() => {
+        if (!sensorSeen) markUnavailable();
+      }, SENSOR_TIMEOUT);
+    }
+
+    /* Must be called synchronously from a tap. iOS only grants this from inside
+       a user gesture, which is the whole reason this is a button and not an
+       automatic upgrade — and the reason the promise is handled with .then()
+       rather than awaited by the caller. An await before the call is what loses
+       the gesture and gets the request rejected with no prompt ever shown. */
+    function requestMotionAccess() {
+      let request: Promise<string>;
+      try {
+        request = DeviceOrientation!.requestPermission!();
+      } catch {
+        return markUnavailable();
+      }
+      request
+        .then((result) => (result === "granted" ? startTilting() : markUnavailable()))
+        .catch(() => markUnavailable());
+    }
+
+    /* ---- the primer ---- */
+
+    /* A cold system dialog asking for motion access is easy to deny by reflex,
+       and a denial is final. So on the permission-gated path the ask is
+       explained first, and the grant is requested from the confirm tap.
+
+       Deliberately remembered for the page load only, not in localStorage: iOS
+       may or may not re-prompt on a later visit and there is no way to ask which,
+       so a remembered grant would sometimes skip the explanation and let the cold
+       prompt through — precisely what this exists to prevent. Within one load the
+       answer is known, so toggling tilt off and on again does not re-explain. */
+    const primer = document.getElementById("tilt-primer") as HTMLDialogElement | null;
+    // Pre-15.4 Safari has no showModal(); there the ask stays as direct as it was.
+    const canPrime = typeof primer?.showModal === "function";
+    let explained = false;
+
+    // Wired up on the permission-gated path only. Everywhere else — Chromium,
+    // Brave, reduced motion — the dialog is inert markup nothing can reach.
+    if (primer && canPrime && button && mayHaveSensor && needsPermission) {
+      document.getElementById("tilt-primer-confirm")?.addEventListener("click", () => {
+        explained = true;
+        // Nothing may be awaited between this tap and the request.
+        requestMotionAccess();
+        primer.close();
+      });
+
+      document.getElementById("tilt-primer-cancel")?.addEventListener("click", () => primer.close());
+
+      // Tapping past a panel is the first gesture anyone tries on a phone. Only
+      // the backdrop is the dialog itself; the card is a child.
+      primer.addEventListener("click", (event) => {
+        if (event.target === primer) primer.close();
+      });
+
+      /* Backing out is not a denial: the control is left exactly as it was —
+         off, enabled, and holding the focus the tap came from. Safari does not
+         focus a button on click, so there is often nothing for the dialog to
+         restore focus to on its own. */
+      primer.addEventListener("close", () => {
+        if (explained) button.removeAttribute("aria-haspopup");
+        button.focus();
+      });
+    }
+
     if (button && mayHaveSensor) {
       if (needsPermission) reveal();
       else probeForSensor();
 
-      button.addEventListener("click", async () => {
+      if (needsPermission && canPrime) button.setAttribute("aria-haspopup", "dialog");
+
+      button.addEventListener("click", () => {
         if (button.getAttribute("aria-disabled") === "true") return;
         if (tilting) return setTilting(false);
-        try {
-          if (needsPermission) {
-            // iOS only grants this from inside the gesture, which is the whole
-            // reason this is a button and not an automatic upgrade.
-            const result = await DeviceOrientation!.requestPermission!();
-            if (result !== "granted") return markUnavailable();
-          }
-          sensorSeen = false;
-          listen(true);
-          setTilting(true);
-          window.clearTimeout(watchdog);
-          watchdog = window.setTimeout(() => {
-            if (!sensorSeen) markUnavailable();
-          }, SENSOR_TIMEOUT);
-        } catch {
-          markUnavailable();
-        }
+        if (!needsPermission) return startTilting();
+        if (canPrime && !explained) return primer!.showModal();
+        requestMotionAccess();
       });
     }
 
@@ -384,8 +465,10 @@
     reduceMotion.addEventListener("change", () => {
       if (!reduceMotion.matches) return;
       // Switched on mid-session: stop tilting, take the control away, and put
-      // the light back where the static design has it.
+      // the light back where the static design has it. The primer goes with the
+      // control — it must never be reachable once tilting cannot do anything.
       if (tilting) setTilting(false);
+      if (primer?.open) primer.close();
       button?.classList.add("hidden");
       root.style.removeProperty("--lx");
       root.style.removeProperty("--ly");
@@ -401,3 +484,33 @@
 
   initLightSource();
 </script>
+
+<style>
+  /* Native <dialog> earns the top layer, the backdrop, the focus trap and
+     Escape without a line of script. Here it is only the frame: the card is a
+     child, so `overflow: visible` is what keeps the neumorphic shadow from
+     being clipped off at the frame's edge. */
+  .tilt-primer {
+    width: min(24rem, calc(100vw - 2rem));
+    padding: 0;
+    border: 0;
+    overflow: visible;
+    background: transparent;
+    color: var(--foreground);
+  }
+  /* Literal rather than a token: ::backdrop only inherits from its originating
+     element in recent Safari, and this has to dim correctly before that. */
+  .tilt-primer::backdrop {
+    background: rgba(28, 25, 23, 0.5);
+    backdrop-filter: blur(3px);
+  }
+  .tilt-primer[open] {
+    animation: tilt-primer-in 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  @keyframes tilt-primer-in {
+    from {
+      opacity: 0;
+      transform: translateY(0.5rem);
+    }
+  }
+</style>
