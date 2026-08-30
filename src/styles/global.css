@@ -225,6 +225,15 @@ body::after {
   .neu-icon:hover {
     box-shadow: var(--neu-flat);
   }
+  /* A latched control. Inset is this design's existing vocabulary for pressed —
+     `.neu-btn:active` already uses it — and the accent is what tells two
+     otherwise identical icon buttons apart at a glance. Both accent tones are
+     the text-safe ones (5.2:1 light, 7.1:1 dark against `--background`), so the
+     on-state is read as state rather than paid for in legibility. */
+  .neu-icon[aria-pressed="true"] {
+    box-shadow: var(--neu-inset);
+    color: var(--accent);
+  }
   /* A control whose sensor turned out not to exist. Reads as present but inert,
      rather than vanishing and leaving the row jumping about. */
   .neu-icon[aria-disabled="true"] {

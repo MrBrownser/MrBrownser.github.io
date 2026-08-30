@@ -238,7 +238,6 @@
     ]
   },
   "footer": {
-    "note": "Built with Astro. Deployed on push.",
     "copyrightName": "Adrià Castany Serrano"
   }
 }
