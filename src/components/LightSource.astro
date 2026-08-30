@@ -35,20 +35,21 @@
     const VERTICAL_SWING = 1.05;
     /* Activation cue. Tapping the control while holding the phone still shows
        nothing at all otherwise — the effect is real but only visible once you
-       happen to tilt. So the light swings off its resting angle and eases back,
-       which demonstrates the one thing that just changed instead of decorating
-       the fact that something did. Radians off rest, then how long the cue owns
-       the light before the sensor takes over. It is a rotation like any other,
-       so the pinned magnitude is untouched: the amount of depth never moves.
-       The swing has to clear the tilt neutral — a phone held flat aims the light
-       overhead, 45° off rest — by enough that the return reads as settling and
-       not as the light merely arriving somewhere. */
-    const CUE_SWING = 1.6;
-    const CUE_HOLD = 420;
+       happen to tilt. So the light takes one full turn around the page and comes
+       back to rest, which demonstrates the whole range the mode just handed to
+       the phone instead of decorating the fact that something changed. It is a
+       rotation like any other, so the pinned magnitude is untouched: the amount
+       of depth never moves, only where it points. Long enough that the half-turn
+       through the bottom — where every raised surface reads as a recess — is a
+       legible pass rather than a flicker. */
+    const CUE_DURATION = 1000;
 
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
-    let targetAngle = Math.PI / 4;
+    // The (1, 1) the design ships with, as an angle.
+    const REST_ANGLE = Math.PI / 4;
+
+    let targetAngle = REST_ANGLE;
     let currentAngle = targetAngle;
     let lastX: number | null = null;
     let lastY: number | null = null;
@@ -65,13 +66,33 @@
       return [Math.cos(angle) * REST, Math.sin(angle) * REST];
     }
 
-    function frame() {
-      let delta = targetAngle - currentAngle;
-      // Always rotate the short way round, so a light crossing the top of the
-      // screen does not unwind the long way through the bottom.
-      while (delta > Math.PI) delta -= 2 * Math.PI;
-      while (delta < -Math.PI) delta += 2 * Math.PI;
-      currentAngle += delta * EASE;
+    function frame(now: number) {
+      let delta = 0;
+
+      if (cueStart === null) {
+        delta = targetAngle - currentAngle;
+        // Always rotate the short way round, so a light crossing the top of the
+        // screen does not unwind the long way through the bottom.
+        while (delta > Math.PI) delta -= 2 * Math.PI;
+        while (delta < -Math.PI) delta += 2 * Math.PI;
+        currentAngle += delta * EASE;
+      } else {
+        /* The cue cannot be expressed as a target, because the short-way-round
+           rule above is exactly what a full turn defeats: one revolution from
+           rest normalises to a delta of zero and the light would not move at
+           all. So it is driven straight off the clock, eased in and out so the
+           revolution reads as one deliberate movement rather than a constant
+           sweep, and the angle is handed back the moment it completes. */
+        const t = Math.min(1, (now - cueStart) / CUE_DURATION);
+        const eased = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(2 - 2 * t, 3) / 2;
+        currentAngle = REST_ANGLE + eased * 2 * Math.PI;
+        if (t === 1) {
+          // A full turn lands back on rest. Say so, rather than leaving the
+          // angle 2π out and every later delta to unwind it.
+          currentAngle = REST_ANGLE;
+          endCue(true);
+        }
+      }
 
       const [x, y] = vectorFor(currentAngle);
       const moved = lastX === null || Math.abs(x - lastX) > EPSILON || Math.abs(y - lastY!) > EPSILON;
@@ -84,8 +105,10 @@
       }
 
       // Stop scheduling once the light has settled. An idle page costs nothing,
-      // which is what makes the tilt mode viable on a phone held still.
-      if (Math.abs(delta) > 0.0005 || moved) {
+      // which is what makes the tilt mode viable on a phone held still. The cue
+      // holds the loop open on its own: eased, its first and last frames move
+      // less than EPSILON and would otherwise read as settled.
+      if (cueStart !== null || Math.abs(delta) > 0.0005 || moved) {
         requestAnimationFrame(frame);
       } else {
         running = false;
@@ -118,7 +141,7 @@
     }
 
     function rest() {
-      targetAngle = Math.PI / 4;
+      targetAngle = REST_ANGLE;
       wake();
     }
 
@@ -170,21 +193,19 @@
     let restBeta: number | null = null;
     let sensorSeen = false;
     let watchdog = 0;
-    let cue = 0;
+    let cueStart: number | null = null;
 
     function endCue(settle: boolean) {
-      window.clearTimeout(cue);
-      cue = 0;
+      cueStart = null;
       // Nothing to hand the light over to until a reading arrives, so it goes
       // back to exactly where the static design has it.
       if (settle) rest();
     }
 
     function playCue() {
-      targetAngle = Math.PI / 4 + CUE_SWING;
+      // Shares its time origin with the timestamp rAF passes to frame().
+      cueStart = performance.now();
       wake();
-      window.clearTimeout(cue);
-      cue = window.setTimeout(() => endCue(true), CUE_HOLD);
     }
 
     function onOrientation(event: DeviceOrientationEvent) {
@@ -198,7 +219,7 @@
       if (restBeta === null) restBeta = event.beta ?? 45;
       // The cue owns the light for its brief run. A live stream arrives on the
       // next frame and would otherwise erase it before anyone saw it.
-      if (cue) return;
+      if (cueStart !== null) return;
 
       const gamma = event.gamma ?? 0;
       const beta = (event.beta ?? 45) - restBeta;
@@ -334,7 +355,7 @@
       root.style.removeProperty("--ly");
       lastX = null;
       lastY = null;
-      currentAngle = targetAngle = Math.PI / 4;
+      currentAngle = targetAngle = REST_ANGLE;
     });
 
     document.addEventListener("visibilitychange", () => {
