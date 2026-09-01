@@ -49,6 +49,15 @@ export interface SiteContent {
     };
   };
   brand: { navInitials: string };
+  lightSource: {
+    /** Shown before iOS's Motion & Orientation prompt, so it is never a cold ask. */
+    permissionPrimer: {
+      title: string;
+      body: string;
+      confirm: string;
+      cancel: string;
+    };
+  };
   hero: {
     name: string;
     portraitAlt: string;

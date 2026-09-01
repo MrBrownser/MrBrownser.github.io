@@ -20,6 +20,14 @@
   "brand": {
     "navInitials": "ACS"
   },
+  "lightSource": {
+    "permissionPrimer": {
+      "title": "Tilt to steer the light",
+      "body": "This uses your phone's motion sensor to move the light the whole page is lit by. iOS asks for Motion & Orientation Access before a site can read that sensor. Nothing is recorded, and nothing leaves your phone.",
+      "confirm": "Continue",
+      "cancel": "Not now"
+    }
+  },
   "hero": {
     "name": "Adrià Castany Serrano",
     "portraitAlt": "Portrait of Adrià Castany Serrano",
