@@ -22,6 +22,12 @@ One page (`src/pages/index.astro`) composing seven section components inside
 `src/layouts/BaseLayout.astro`. Interactivity is plain `<script>` blocks inside
 `.astro` components — there is no framework runtime and no state management.
 
+Alongside it, three generated non-HTML routes for machines: `index.md.ts`
+(a Markdown mirror of the page), `llms.txt.ts` and `robots.txt.ts`. They render
+from `src/lib/agentDocs.ts`, which reads the same `site` object the components
+do. The response headers they set only apply under `dev`/`preview` — Pages picks
+its own by file extension.
+
 - **Copy** → `src/content/site.json`, typed by `src/types/siteContent.ts`, read
   through `src/lib/site.ts`.
 - **Design tokens** → `src/styles/global.css` (`:root` and `.dark`).

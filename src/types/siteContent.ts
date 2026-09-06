@@ -6,10 +6,18 @@ export interface SocialLink {
   icon: SocialIcon;
 }
 
+/**
+ * A fact tagged with `schemaRole` is the single source for that field in the
+ * JSON-LD as well as on the page. Tagged rather than matched on `label`, so
+ * rewriting the visible label cannot quietly detach the schema from the copy.
+ */
+export type SchemaRole = "homeLocation" | "employer";
+
 export interface Fact {
   label: string;
   value: string;
   href?: string;
+  schemaRole?: SchemaRole;
 }
 
 export interface TimelineEntry {
@@ -27,6 +35,21 @@ export interface Principle {
 }
 
 export interface SiteContent {
+  /**
+   * Prose for the machine-facing outputs (the Markdown mirror, llms.txt,
+   * robots.txt). Lives here for the same reason every other string does:
+   * a generated document is still copy, and copy does not belong in code.
+   */
+  agents: {
+    /** Says the Markdown mirror is generated and that the HTML is canonical. */
+    mirrorNote: string;
+    /** Heading over the link list in llms.txt. */
+    documentsHeading: string;
+    homeLinkNote: string;
+    markdownLinkNote: string;
+    /** Why this site is happy to be crawled, in a robots.txt comment. */
+    robotsNote: string;
+  };
   meta: {
     siteUrl: string;
     siteName: string;
@@ -46,6 +69,8 @@ export interface SiteContent {
       firstName: string;
       lastName: string;
       username: string;
+      /** ISO 3166-1 for the JSON-LD address. The page states the city, not the country. */
+      addressCountry: string;
     };
   };
   brand: { navInitials: string };
