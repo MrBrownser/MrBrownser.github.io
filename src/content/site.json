@@ -21,7 +21,8 @@
     "profile": {
       "firstName": "Adrià",
       "lastName": "Castany Serrano",
-      "username": "mrbrownser"
+      "username": "mrbrownser",
+      "addressCountry": "ES"
     }
   },
   "brand": {
@@ -45,12 +46,14 @@
     "facts": [
       {
         "label": "Based in",
-        "value": "Barcelona"
+        "value": "Barcelona",
+        "schemaRole": "homeLocation"
       },
       {
         "label": "Currently",
         "value": "Videocation.no",
-        "href": "https://videocation.no"
+        "href": "https://videocation.no",
+        "schemaRole": "employer"
       },
       {
         "label": "Languages",

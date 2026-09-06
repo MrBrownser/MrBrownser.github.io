@@ -28,18 +28,28 @@ The site also builds three non-HTML routes out of that same JSON, so an agent
 looking Adrià up gets the content without the markup:
 
 - **`/index.md`** — the page as Markdown, about a sixth the size of the HTML.
-  Linked from the page as `rel="alternate"`, kept out of the sitemap so it does
-  not compete with the canonical page, and carrying a canonical pointer of its
-  own. Serving this off `/` instead would need content negotiation, which needs
-  response headers, which GitHub Pages does not give us.
-- **`/llms.txt`** — an index pointing at the above. Little evidence anything
-  reads it; it is generated, so it costs nothing to keep true.
+  Linked from the page as `rel="alternate" type="text/markdown"`. Serving it off
+  `/` instead would need content negotiation, which needs response headers,
+  which GitHub Pages does not give us.
+
+  It is **not** formally canonicalised to the HTML page, and cannot be here.
+  Google's supported methods are redirects, a `rel="canonical"` annotation, and
+  the `Link` HTTP header; a plain-text `.md` on static hosting can carry none of
+  them, and sitemap membership is only a weak signal either way. So the mirror
+  is kept out of the sitemap and states its canonical URL in its own footer,
+  which is advisory — readable by a human or an agent, not a directive a search
+  engine acts on.
+- **`/llms.txt`** — an index pointing at the above. Crawlers requesting it
+  directly are rare; Chrome's Lighthouse does audit for it. Generated, so it
+  costs nothing to keep true.
 - **`/robots.txt`** — a blanket allow, plus a `Content-Signal` line saying the
   permission is deliberate: `search=yes, ai-train=yes, ai-input=yes`.
 
-The page itself carries a `ProfilePage` → `Person` JSON-LD graph, with
-`knowsAbout`, `alumniOf` and `hasCredential` derived from the timeline entries
-rather than restated.
+The page itself carries a `ProfilePage` → `Person` JSON-LD graph. Nothing in it
+is written twice: `knowsAbout` comes from the timeline tags, `alumniOf` and
+`hasCredential` from the entries marked `type: "education"`, and location and
+employer from the hero facts tagged with a `schemaRole`. Change the copy and the
+graph moves with it.
 
 None of it is hand-written. All of it goes through the same `{{Years}}`
 substitution as the page, so nothing can publish a year count the page

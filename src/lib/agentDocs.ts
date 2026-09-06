@@ -1,5 +1,5 @@
 import { site } from "@/lib/site";
-import type { Fact, SocialLink, TimelineEntry } from "@/types/siteContent";
+import type { Fact, SiteContent, SocialLink, TimelineEntry } from "@/types/siteContent";
 
 /**
  * The machine-facing renderings of the site: a Markdown mirror of the page and
@@ -14,6 +14,12 @@ import type { Fact, SocialLink, TimelineEntry } from "@/types/siteContent";
  * canonical URL needs a Vary: Accept header, and GitHub Pages gives us no
  * control over response headers. A distinct /index.md is the only shape that
  * actually deploys.
+ *
+ * The mirror carries every piece of profile copy, headlines included -- those
+ * live split across three fields so the middle can take the accent, and a
+ * mirror that skipped them would quietly drop real sentences. What it leaves
+ * out is control copy for things Markdown has no version of: button labels,
+ * and the motion-permission primer. Section numbers go too; they are ornament.
  */
 
 const BLANK = "\n\n";
@@ -24,6 +30,7 @@ export function absolute(path: string): string {
 }
 
 export const MARKDOWN_MIRROR_PATH = "/index.md";
+export const LLMS_INDEX_PATH = "/llms.txt";
 
 function fact(entry: Fact): string {
   const value = entry.href ? `[${entry.value}](${entry.href})` : entry.value;
@@ -50,6 +57,21 @@ function social(link: SocialLink): string {
   return `- [${link.label}](${link.href})`;
 }
 
+/**
+ * The page splits each section headline across three fields so the middle one
+ * can take the accent colour. They only ever reassemble in the browser, which
+ * is exactly why a mirror that skipped them would lose real copy.
+ */
+function headline(before: string, highlight: string, after: string): string {
+  return `### ${before}${highlight}${after}`;
+}
+
+/** Null today, so render it only when the copy comes back rather than lose it later. */
+function roleParagraph(role: NonNullable<SiteContent["about"]["roleParagraph"]>): string {
+  const company = `[${role.companyName}](${role.companyUrl})`;
+  return `${role.beforeRole}${role.role} ${role.atCompany} ${company}${role.after}`;
+}
+
 /** The page, as Markdown. Section headings are the ones the page shows. */
 export function buildMarkdownMirror(): string {
   const { agents, hero, about, career, timeline, howIWork, principles, contact } = site;
@@ -61,13 +83,20 @@ export function buildMarkdownMirror(): string {
     hero.facts.map(fact).join("\n"),
 
     `## ${about.sectionLabel}`,
+    headline(about.cardHeadlineBefore, about.cardHeadlineHighlight, about.cardHeadlineAfter),
     ...about.paragraphs,
+    ...(about.roleParagraph ? [roleParagraph(about.roleParagraph)] : []),
 
     `## ${career.sectionLabel}`,
     career.intro,
     ...timeline.map(timelineEntry),
 
     `## ${howIWork.sectionLabel}`,
+    headline(
+      howIWork.cardHeadlineBefore,
+      howIWork.cardHeadlineHighlight,
+      howIWork.cardHeadlineAfter,
+    ),
     ...howIWork.paragraphs,
     `> ${howIWork.quote}`,
     ...howIWork.closingParagraphs,
@@ -76,6 +105,7 @@ export function buildMarkdownMirror(): string {
     ...principles.items.flatMap((item) => [`### ${item.title}`, item.body]),
 
     `## ${contact.sectionLabel}`,
+    headline(contact.headlineBefore, contact.headlineHighlight, contact.headlineAfter),
     contact.blurb,
     [`- <${contact.email}>`, ...contact.socials.map(social)].join("\n"),
 

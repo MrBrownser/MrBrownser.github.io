@@ -1,4 +1,5 @@
 import { site } from "@/lib/site";
+import type { SchemaRole } from "@/types/siteContent";
 
 /**
  * JSON-LD for the page, as a @graph rather than a bare Person.
@@ -21,6 +22,11 @@ const PAGE_ID = `${site.meta.siteUrl}/#profilepage`;
 function knowsAbout(): string[] {
   const tags = site.timeline.flatMap((entry) => entry.tags ?? []);
   return [...new Set(tags)];
+}
+
+/** The hero fact that owns a structured field, so the page and the graph agree. */
+function tagged(role: SchemaRole) {
+  return site.hero.facts.find((entry) => entry.schemaRole === role);
 }
 
 const educationEntries = () => site.timeline.filter((entry) => entry.type === "education");
@@ -52,6 +58,12 @@ export function buildSchemaGraph({
 }) {
   const { meta, hero, contact, footer } = site;
 
+  // Both read off the hero facts the page renders, so editing site.json moves
+  // the copy and the graph together. Drop the fact and the field goes with it,
+  // which is the failure mode worth having: absent beats stale.
+  const location = tagged("homeLocation");
+  const employer = tagged("employer");
+
   const person = {
     "@type": "Person",
     "@id": PERSON_ID,
@@ -64,10 +76,16 @@ export function buildSchemaGraph({
     url: meta.siteUrl,
     image: portraitUrl,
     email: `mailto:${contact.email}`,
-    // Location and employer are the two values site.json holds only as prose
-    // (a hero fact, a timeline entry), so they stay stated here as they were.
-    address: { "@type": "PostalAddress", addressLocality: "Barcelona", addressCountry: "ES" },
-    worksFor: { "@type": "Organization", name: "Videocation.no", url: "https://videocation.no" },
+    address: location && {
+      "@type": "PostalAddress",
+      addressLocality: location.value,
+      addressCountry: meta.profile.addressCountry,
+    },
+    worksFor: employer && {
+      "@type": "Organization",
+      name: employer.value,
+      url: employer.href,
+    },
     hasOccupation: { "@type": "Occupation", name: hero.tagline },
     knowsAbout: knowsAbout(),
     alumniOf: alumniOf(),

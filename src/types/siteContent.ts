@@ -6,10 +6,18 @@ export interface SocialLink {
   icon: SocialIcon;
 }
 
+/**
+ * A fact tagged with `schemaRole` is the single source for that field in the
+ * JSON-LD as well as on the page. Tagged rather than matched on `label`, so
+ * rewriting the visible label cannot quietly detach the schema from the copy.
+ */
+export type SchemaRole = "homeLocation" | "employer";
+
 export interface Fact {
   label: string;
   value: string;
   href?: string;
+  schemaRole?: SchemaRole;
 }
 
 export interface TimelineEntry {
@@ -61,6 +69,8 @@ export interface SiteContent {
       firstName: string;
       lastName: string;
       username: string;
+      /** ISO 3166-1 for the JSON-LD address. The page states the city, not the country. */
+      addressCountry: string;
     };
   };
   brand: { navInitials: string };
