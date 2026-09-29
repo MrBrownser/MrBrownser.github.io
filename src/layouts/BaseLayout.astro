@@ -4,6 +4,7 @@ import "@fontsource-variable/fraunces";
 import "@/styles/global.css";
 import Nav from "@/components/Nav.astro";
 import LightSource from "@/components/LightSource.astro";
+import Analytics from "@/components/Analytics.astro";
 import { site } from "@/lib/site";
 import portrait from "@/assets/profile.jpg";
 
@@ -79,6 +80,8 @@ const personSchema = {
     <link rel="sitemap" href="/sitemap-index.xml" />
 
     <script is:inline type="application/ld+json" set:html={JSON.stringify(personSchema)} />
+
+    <Analytics />
 
     <script is:inline>
       // Runs before first paint so the correct theme is never repainted.

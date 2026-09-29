@@ -1,0 +1,82 @@
+---
+/*
+ * GoatCounter. How many people arrive, where they came from, and whether they
+ * did anything once they were here.
+ *
+ * Cookieless, and it writes nothing to the visitor's device — which is the only
+ * reason this site still has no consent banner. Anything that stores state
+ * client-side would need one, and a banner is a real cost on a page whose whole
+ * argument is the design.
+ *
+ * The endpoint is not a secret: it ships in the HTML on every page either way.
+ * Keeping it here rather than behind an environment variable means there is no
+ * second place to configure and nothing to forget on a fresh checkout.
+ * count.js refuses to count localhost and the private ranges on its own, so
+ * `npm run dev` never reaches the dashboard.
+ */
+const ENDPOINT = "https://mrbrownser.goatcounter.com/count";
+---
+
+{/* Served from gc.zgo.at, which is the one runtime request the site makes to a
+    third party. Ad blockers block it, and on GitHub Pages there is no custom
+    domain to proxy it behind, so treat every number as a floor rather than a
+    count. */}
+<script is:inline async data-goatcounter={ENDPOINT} src="https://gc.zgo.at/count.js"></script>
+
+<script>
+  /*
+   * Three events, and deliberately only three. On a one-page site everything
+   * else a visitor can do is reading, which the pageview already records — more
+   * events would only produce numbers too small to read anything into.
+   */
+
+  type GoatCounter = {
+    count?: (vars: { path: string; event?: boolean }) => void;
+  };
+
+  /* Looked up per call rather than captured once: count.js is async and may
+     never arrive at all. A counter that is not there is a no-op, never a thrown
+     error in a page that otherwise works fine without it. */
+  function count(path: string) {
+    (window as unknown as { goatcounter?: GoatCounter }).goatcounter?.count?.({
+      path,
+      event: true,
+    });
+  }
+
+  /* Landing on the page is not the same as reading it. The signal is the hero
+     leaving the viewport completely, which a hero taller than the screen can
+     only do once it has been scrolled past in full. It is always intersecting
+     at the top of the page, so the observer's first callback can never be
+     mistaken for a scroll.
+
+     A visit that arrives at /#contact is excluded outright rather than
+     corrected for. Its fragment jump is animated — `scroll-behavior: smooth`
+     in global.css — so it begins at the top with the hero in view and drifts
+     away over about a second, which is indistinguishable from scrolling unless
+     the baseline is deferred past an animation with no fixed duration. Such a
+     visitor never scrolled past the hero; they started below it. Dropping the
+     visit undercounts by the rare case where they scroll back up and down
+     again, which is the safe direction for a number to be wrong in. */
+  const hero = document.getElementById("hero");
+  const landing = location.hash.length > 1 && document.getElementById(location.hash.slice(1));
+
+  if (hero && (!landing || landing === hero)) {
+    const observer = new IntersectionObserver((entries) => {
+      if (entries.some((entry) => entry.isIntersecting)) return;
+      count("scrolled-past-hero");
+      observer.disconnect();
+    });
+    observer.observe(hero);
+  }
+
+  /* One delegated listener rather than a binding per link. The `data-analytics`
+     attributes in the markup are then the only record of what gets counted:
+     adding a link later is a markup change, not a second file to remember. */
+  document.addEventListener("click", (event) => {
+    if (!(event.target instanceof Element)) return;
+    const marked = event.target.closest<HTMLElement>("[data-analytics]");
+    const name = marked?.dataset.analytics;
+    if (name) count(name);
+  });
+</script>
