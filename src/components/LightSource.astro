@@ -213,6 +213,13 @@ const { permissionPrimer } = site.lightSource;
     const SENSOR_TIMEOUT = 1500;
     // How long the silent probe waits for proof of a live sensor before giving up.
     const PROBE_TIMEOUT = 2000;
+    /* iOS in-app webviews (Instagram, LinkedIn) can swallow the motion prompt
+       and leave requestPermission() pending forever. A genuine prompt also
+       stays pending for exactly as long as someone is reading it, so no
+       threshold can tell the two apart — this one is only generous: a
+       two-button system alert is answered in a few seconds, not ten. Guessing
+       wrong costs little, because a late answer still settles the control. */
+    const PERMISSION_TIMEOUT = 10000;
 
     // Both axes share one zero: the pose the phone was actually in when tilting
     // started. Calibrating only beta left the two axes measuring from different
@@ -223,6 +230,11 @@ const { permissionPrimer } = site.lightSource;
     let sensorSeen = false;
     let watchdog = 0;
     let cueStart: number | null = null;
+    // One request in flight at a time. A re-tap while iOS is still deciding
+    // would otherwise fire a second request with the primer already spent.
+    let permissionPending = false;
+    let permissionTimedOut = false;
+    let permissionTimer = 0;
 
     function endCue(settle: boolean) {
       cueStart = null;
@@ -334,6 +346,15 @@ const { permissionPrimer } = site.lightSource;
       rest();
     }
 
+    // The inverse, for the one case where "unavailable" was a guess: a
+    // permission answer that arrives after PERMISSION_TIMEOUT gave up on it.
+    function markAvailable() {
+      if (!button) return;
+      button.removeAttribute("aria-disabled");
+      button.removeAttribute("title");
+      delete button.dataset.sensor;
+    }
+
     /* Reveal the control only once we know it can do something.
 
        On Chromium the sensor streams without any permission, so we can subscribe
@@ -396,9 +417,30 @@ const { permissionPrimer } = site.lightSource;
       } catch {
         return markUnavailable();
       }
-      request
-        .then((result) => (result === "granted" ? startTilting() : markUnavailable()))
-        .catch(() => markUnavailable());
+      permissionPending = true;
+      button?.setAttribute("aria-busy", "true");
+      window.clearTimeout(permissionTimer);
+      permissionTimer = window.setTimeout(() => {
+        permissionTimedOut = true;
+        button?.removeAttribute("aria-busy");
+        markUnavailable();
+      }, PERMISSION_TIMEOUT);
+
+      const settle = (granted: boolean) => {
+        window.clearTimeout(permissionTimer);
+        permissionPending = false;
+        button?.removeAttribute("aria-busy");
+        const late = permissionTimedOut;
+        permissionTimedOut = false;
+        // The control may have been withdrawn while the prompt was up.
+        if (reduceMotion.matches) return;
+        if (!granted) return markUnavailable();
+        // A grant after the timeout means a person was reading a real prompt,
+        // not a host swallowing it. Their answer wins over our guess.
+        if (late) markAvailable();
+        startTilting();
+      };
+      request.then((result) => settle(result === "granted")).catch(() => settle(false));
     }
 
     /* ---- the primer ---- */
@@ -453,6 +495,7 @@ const { permissionPrimer } = site.lightSource;
 
       button.addEventListener("click", () => {
         if (button.getAttribute("aria-disabled") === "true") return;
+        if (permissionPending) return;
         if (tilting) return setTilting(false);
         if (!needsPermission) return startTilting();
         if (canPrime && !explained) return primer!.showModal();
