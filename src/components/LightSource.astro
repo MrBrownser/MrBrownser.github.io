@@ -192,9 +192,21 @@ const { permissionPrimer } = site.lightSource;
       | (typeof window.DeviceOrientationEvent & { requestPermission?: () => Promise<string> })
       | undefined;
     const needsPermission = typeof DeviceOrientation?.requestPermission === "function";
-    // Desktop Chrome also defines requestPermission: it selects the permission
-    // path, but proves neither iOS nor a sensor. Both paths require touch input.
-    // Any pointer keeps an iPad eligible when a trackpad is its primary input.
+    /* requestPermission is defined by Chrome 146+ too, on any hardware, so it
+       proves neither iOS nor a sensor. GestureEvent is WebKit-only: true on iOS
+       and iPadOS in every browser (all of them are WKWebView), false on Chrome
+       everywhere. Touch alone is not enough either — a Surface reports coarse
+       input and defines requestPermission, and to this code looked exactly like
+       an iPhone. So only both together take the reveal-on-faith path; everything
+       else has to prove its sensor through the probe.
+
+       GestureEvent is non-standard. If WebKit ever drops it, iOS falls through
+       to the probe, which sees nothing before a grant, and the control silently
+       disappears on iPhone. Check here first if that ever happens. */
+    const isWebKit = "GestureEvent" in window;
+    const permissionGated = needsPermission && isWebKit;
+    // Both paths require touch input. Any pointer keeps an iPad eligible when a
+    // trackpad is its primary input.
     // Reduced motion pins the light, so tilting could not do anything. Offering
     // the control anyway would be the same dead button as on Brave.
     const mayHaveSensor =
@@ -314,6 +326,9 @@ const { permissionPrimer } = site.lightSource;
 
     function setTilting(on: boolean) {
       tilting = on;
+      // A session stopped before its first reading was not a sensor failure;
+      // left running, the watchdog would disable the control a moment later.
+      if (!on) window.clearTimeout(watchdog);
       button?.setAttribute("aria-pressed", String(on));
       button?.setAttribute("aria-label", on ? "Stop steering the light by tilting" : "Steer the light by tilting");
       if (on) {
@@ -355,7 +370,8 @@ const { permissionPrimer } = site.lightSource;
       delete button.dataset.sensor;
     }
 
-    /* Reveal the control only once we know it can do something.
+    /* Reveal the control only once there is reason to believe it can do
+       something — proof on the probe path, a strong inference on iOS.
 
        On Chromium the sensor streams without any permission, so we can subscribe
        quietly on load and wait for one real reading before showing anything.
@@ -366,8 +382,14 @@ const { permissionPrimer } = site.lightSource;
        iOS is the exception: readings are gated behind a permission that can only
        be requested from inside a user gesture, so there is nothing to probe until
        the user has already tapped. There the control has to appear on faith, and
-       the watchdog is what catches a refusal. */
+       the watchdog is what catches a refusal. Defining requestPermission is not
+       enough to earn that — Chrome does too — so the faith path is WebKit with
+       touch only (see permissionGated). */
+    let cancelProbe: (() => void) | null = null;
+
     function reveal() {
+      // A probe can settle after reduced motion was switched on mid-session.
+      if (reduceMotion.matches) return;
       button?.classList.remove("hidden");
     }
 
@@ -380,6 +402,7 @@ const { permissionPrimer } = site.lightSource;
         for (const name of ORIENTATION_EVENTS) {
           window.removeEventListener(name, onProbe as EventListener);
         }
+        cancelProbe = null;
         if (found) reveal();
       };
       const onProbe = (event: DeviceOrientationEvent) => {
@@ -393,6 +416,7 @@ const { permissionPrimer } = site.lightSource;
         window.addEventListener(name, onProbe as EventListener);
       }
       const timer = window.setTimeout(() => finish(false), PROBE_TIMEOUT);
+      cancelProbe = () => finish(false);
     }
 
     function startTilting() {
@@ -461,7 +485,7 @@ const { permissionPrimer } = site.lightSource;
 
     // Wired up on the permission-gated touch path only. Without that gate,
     // the dialog is inert markup nothing can reach.
-    if (primer && canPrime && button && mayHaveSensor && needsPermission) {
+    if (primer && canPrime && button && mayHaveSensor && permissionGated) {
       document.getElementById("tilt-primer-confirm")?.addEventListener("click", () => {
         explained = true;
         // Nothing may be awaited between this tap and the request.
@@ -488,16 +512,18 @@ const { permissionPrimer } = site.lightSource;
     }
 
     if (button && mayHaveSensor) {
-      if (needsPermission) reveal();
+      // needsPermission alone only picks how a grant is asked for; whether the
+      // control appears unproven is permissionGated's call.
+      if (permissionGated) reveal();
       else probeForSensor();
 
-      if (needsPermission && canPrime) button.setAttribute("aria-haspopup", "dialog");
+      if (permissionGated && canPrime) button.setAttribute("aria-haspopup", "dialog");
 
       button.addEventListener("click", () => {
         if (button.getAttribute("aria-disabled") === "true") return;
         if (permissionPending) return;
         if (tilting) return setTilting(false);
-        if (!needsPermission) return startTilting();
+        if (!permissionGated) return startTilting();
         if (canPrime && !explained) return primer!.showModal();
         requestMotionAccess();
       });
@@ -511,6 +537,7 @@ const { permissionPrimer } = site.lightSource;
       // the light back where the static design has it. The primer goes with the
       // control — it must never be reachable once tilting cannot do anything.
       if (tilting) setTilting(false);
+      cancelProbe?.();
       if (primer?.open) primer.close();
       button?.classList.add("hidden");
       root.style.removeProperty("--lx");

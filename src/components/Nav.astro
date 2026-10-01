@@ -44,8 +44,9 @@ const { brand } = site;
     </ul>
 
     <div class="flex items-center gap-2">
-      {/* Hidden until LightSource.astro confirms a real motion sensor. Desktop
-          browsers define DeviceOrientationEvent without having one. */}
+      {/* Hidden until LightSource.astro has reason to offer it: a live reading
+          on Chromium, or WebKit with touch on iOS, where no reading can arrive
+          before the permission tap. Nothing is confirmed on the iOS path. */}
       <button
         id="tilt-toggle"
         class="neu-icon hidden h-11 w-11 text-foreground"
