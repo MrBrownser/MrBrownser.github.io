@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+# Deliberately not in deploy.yml: code from a pull request must not run with
+# pages: write or id-token: write, so this file asks for read-only and nothing else.
+permissions:
+  contents: read
+
+# The opposite of the deploy group: a newer push supersedes the run in flight.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Same major as deploy.yml; a check on another version proves less than it appears to.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Type check
+        run: npm run check
+
+      # astro check covers types and templates, not build-time failures such as
+      # a bad route or image processing. The committed public/og.jpg is used as
+      # is: regenerating it needs a browser and only matters for the deployed card.
+      - name: Build
+        run: npm run build
