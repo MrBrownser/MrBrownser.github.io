@@ -83,8 +83,12 @@ the `{{Years}}` count baked into the card from contradicting the page.
   `perf:`, `style(design):`.
 - Copy is first person, plain and declarative. No thought-leader cadence, no
   "It's not X, it's Y", no triads.
-- Adding a dependency is a decision, not a detail. The site currently ships no
-  runtime JavaScript beyond its own inline scripts.
+- Adding a dependency is a decision, not a detail. The site ships no runtime
+  JavaScript beyond its own inline scripts and one third-party counter:
+  GoatCounter, in `src/components/Analytics.astro`. That is the whole exception
+  and it was argued for on its own terms — cookieless, so no consent banner, and
+  small enough not to change the page's weight profile. A second one needs the
+  same argument made again, not this precedent.
 
 ## Working process
 
