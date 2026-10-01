@@ -15,7 +15,7 @@ import { site } from "@/lib/site";
 const { permissionPrimer } = site.lightSource;
 ---
 
-{/* Only ever opened on the permission-gated path — iOS Safari — so it stays
+{/* Only ever opened on the permission-gated touch path, so it stays
     display:none everywhere else. The panel is a child rather than the dialog
     itself so a tap on the backdrop is distinguishable from a tap on the card's
     padding, which is how light dismissal stays honest. */}
@@ -192,15 +192,15 @@ const { permissionPrimer } = site.lightSource;
       | (typeof window.DeviceOrientationEvent & { requestPermission?: () => Promise<string> })
       | undefined;
     const needsPermission = typeof DeviceOrientation?.requestPermission === "function";
-    // Desktop Chrome defines DeviceOrientationEvent, so its presence proves
-    // nothing on its own. Require a real sensor gate: iOS's permission API, or
-    // a device that at least claims a coarse pointer.
+    // Desktop Chrome also defines requestPermission: it selects the permission
+    // path, but proves neither iOS nor a sensor. Both paths require touch input.
+    // Any pointer keeps an iPad eligible when a trackpad is its primary input.
     // Reduced motion pins the light, so tilting could not do anything. Offering
     // the control anyway would be the same dead button as on Brave.
     const mayHaveSensor =
       Boolean(DeviceOrientation) &&
       !reduceMotion.matches &&
-      (needsPermission || window.matchMedia("(pointer: coarse)").matches);
+      window.matchMedia("(any-pointer: coarse)").matches;
 
     /* Android is uneven here. Plenty of devices never fire `deviceorientation`
        at all — it wants a gyroscope — but do fire `deviceorientationabsolute`,
@@ -417,8 +417,8 @@ const { permissionPrimer } = site.lightSource;
     const canPrime = typeof primer?.showModal === "function";
     let explained = false;
 
-    // Wired up on the permission-gated path only. Everywhere else — Chromium,
-    // Brave, reduced motion — the dialog is inert markup nothing can reach.
+    // Wired up on the permission-gated touch path only. Without that gate,
+    // the dialog is inert markup nothing can reach.
     if (primer && canPrime && button && mayHaveSensor && needsPermission) {
       document.getElementById("tilt-primer-confirm")?.addEventListener("click", () => {
         explained = true;
