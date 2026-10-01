@@ -4,6 +4,7 @@ import "@fontsource-variable/fraunces";
 import "@/styles/global.css";
 import Nav from "@/components/Nav.astro";
 import LightSource from "@/components/LightSource.astro";
+import Analytics from "@/components/Analytics.astro";
 import { site } from "@/lib/site";
 import { buildSchemaGraph } from "@/lib/schema";
 import { LLMS_INDEX_PATH, MARKDOWN_MIRROR_PATH } from "@/lib/agentDocs";
@@ -76,6 +77,8 @@ const schema = buildSchemaGraph({ canonical: canonical.href, portraitUrl: portra
     <link rel="describedby" type="text/plain" href={LLMS_INDEX_PATH} />
 
     <script is:inline type="application/ld+json" set:html={JSON.stringify(schema)} />
+
+    <Analytics />
 
     <script is:inline>
       // Runs before first paint so the correct theme is never repainted.

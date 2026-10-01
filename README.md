@@ -76,7 +76,29 @@ with the accessibility problem that usually sinks neumorphism handled directly:
 - Every animation is behind `prefers-reduced-motion`.
 
 Fonts are self-hosted through Fontsource: Fraunces for display, Inter for the
-rest. No external requests at runtime.
+rest. The analytics counter below is the only runtime request that leaves the
+page.
+
+## Analytics
+
+`src/components/Analytics.astro` loads [GoatCounter](https://www.goatcounter.com),
+cookieless and storing nothing on the visitor's device — which is why the site
+needs no consent banner. It records pageviews and referrers, plus three events:
+`scrolled-past-hero`, `email-click` and `social-<network>`. Events are declared
+in markup with `data-analytics="<name>"`; one delegated listener picks them up,
+so a new one is an attribute and nothing else.
+
+The endpoint is hardcoded because it ships in the HTML anyway. `count.js`
+declines to count localhost and the private ranges on its own, so `npm run dev`
+never reaches the dashboard.
+
+To keep your own visits out of the stats, load the site once with
+`#toggle-goatcounter` appended to the URL. That sets a flag in the browser's
+local storage, so do it per browser.
+
+Numbers here are a floor, not a count: ad blockers block `gc.zgo.at`, and the
+usual fix — proxying the script behind your own domain — needs a server this
+site deliberately does not have.
 
 ## Coming next
 
