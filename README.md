@@ -61,6 +61,9 @@ contradicts.
 GitHub Pages. It type-checks before it builds, so a broken content shape fails
 the pipeline instead of shipping.
 
+`.github/workflows/ci.yml` runs the same check and build on every pull request,
+read-only, so a failure shows up on the PR rather than after the merge.
+
 One-time setup in the repo: **Settings → Pages → Source: GitHub Actions**.
 
 ## Design notes
